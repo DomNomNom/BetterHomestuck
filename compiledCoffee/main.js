@@ -218,12 +218,12 @@
 
   goNext = function() {
     var contentBottom;
-    contentBottom = parseInt(getIframe(currentUrl()).attr('contentHeight')) + 20;
+    contentBottom = parseInt(getIframe(currentUrl()).attr('contentHeight')) - 15;
     if (scroll() + $(window).height() > contentBottom) {
       return update(nextUrl(currentUrl()));
     } else {
       $("html, body").animate({
-        scrollTop: Math.min(contentBottom + 10 - $(window).height(), scroll() + scrollAmount())
+        scrollTop: Math.min(contentBottom + 5 - $(window).height(), scroll() + scrollAmount())
       });
       return setHash(currentUrl());
     }

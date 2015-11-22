@@ -10,6 +10,9 @@ body {
     width: 100%;
     height: 8000px;
 }
+iframe {
+    border: 0;
+}
 
 #hold-your-horses {
     margin-bottom:  500px;

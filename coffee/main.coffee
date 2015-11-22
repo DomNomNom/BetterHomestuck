@@ -2,6 +2,8 @@
 cacheSize_forward = 4
 baseURL = 'http://www.mspaintadventures.com/'
 
+
+
 # padds a integer with zeroes so it is of string length 6
 # 1902 --> '001902'
 pad6 = (pageNum) ->
@@ -178,14 +180,14 @@ update = (targetUrl) ->
 
 scrollAmount = () -> 0.6 * window.innerHeight - 20
 goNext = () ->
-    contentBottom = parseInt(getIframe(currentUrl()).attr('contentHeight')) + 20
+    contentBottom = parseInt(getIframe(currentUrl()).attr('contentHeight')) - 15
     # if the bottom of the view is below the bottom of the content, go to the next page
     if scroll() + $(window).height() > contentBottom
         update nextUrl currentUrl()
     else
         # scroll(scroll() + 0.75 * window.innerHeight)
         $("html, body").animate({ scrollTop: Math.min(
-            contentBottom + 10 - $(window).height(),
+            contentBottom + 5 - $(window).height(),
             scroll() + scrollAmount()
         )});
         setHash currentUrl()
