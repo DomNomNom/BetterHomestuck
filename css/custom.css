@@ -1,10 +1,42 @@
-.stuckpage {
+body {
+    margin: 0px;
+    background: #5a5a5a;
+}
 
+#cache-pages {
+    width: 75%;
+}
+.stuckpage {
     width: 100%;
     height: 8000px;
 }
 
 #hold-your-horses {
-    margin-bottom: 1000px;
-    margin-top:    1000px;
+    margin-bottom:  500px;
+    margin-top:     500px;
+    padding:        100px;
 }
+
+
+
+
+#sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width:25%;
+    margin: 0;
+}
+
+#sidebar span {
+    display: flex;
+    justify-content: center; /* align horizontal */
+    align-items: center; /* align vertical */
+    height: 100%;
+}
+#sidebar span :active {  background-image: none; }
+#sidebar span :hover  {  background-image: none; }
+
+#nextlink { height: 75vh; }
+#prevlink { height: 25vh; }
+

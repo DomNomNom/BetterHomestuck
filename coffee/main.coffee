@@ -13,6 +13,9 @@ pad6 = (pageNum) ->
 isA6A5A1X2COMBO = (pageNum) -> return 7688 <= pageNum <= 7824
 
 makeUrl = (pageNum) ->
+    if pageNum == 1900
+        pageNum = 1901
+
     php = ''
     if pageNum == 7680 then return 'http://www.mspaintadventures.com/007680/007680.html'
     else if pageNum == 6009          then php = 'cascade.php'
@@ -91,11 +94,11 @@ window.onmessage = (event) ->
 
 
 prependToCache = (url) ->
-    $('.cache-pages').prepend makeIframe url
+    $('#cache-pages').prepend makeIframe url
     activateIframe url
 
 appendToCache = (url) ->
-    $('.cache-pages').append makeIframe url
+    $('#cache-pages').append makeIframe url
     activateIframe url
 
 removeFromCache = (url) ->
@@ -181,9 +184,6 @@ goNext = () ->
         update nextUrl currentUrl()
     else
         # scroll(scroll() + 0.75 * window.innerHeight)
-        console.log contentBottom+1 - $(window).height()
-        console.log scroll() + scrollAmount()
-        console.log ''
         $("html, body").animate({ scrollTop: Math.min(
             contentBottom + 10 - $(window).height(),
             scroll() + scrollAmount()

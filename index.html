@@ -12,8 +12,9 @@
     <title>Yay hometuck!</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="css/bootstrap.css">
-    <link rel="stylesheet" href="css/bootswatch-slate.css">
+    <!-- <link rel="stylesheet" href="css/bootstrap.css"> -->
+    <!-- <link rel="stylesheet" href="css/bootswatch-slate.css"> -->
+    <link rel="stylesheet" href="css/custom-slate.css">
     <link rel="stylesheet" href="css/custom.css">
 
     <!-- Custom styles for this template -->
@@ -28,56 +29,33 @@
 
   <body>
 
-
-    <div class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a href="../" class="navbar-brand">ReadHomestuck</a>
-          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div class="navbar-collapse collapse" id="navbar-main">
-          <ul class="nav navbar-nav">
-            <li class="dropdown">
-            <li>
-              <a class="prevlink" href="#prev">previous</a>
-            </li>
-            <li>
-              <a class="nextlink" href="#next">next</a>
-              <!-- onclick="displayNextPage()" -->
-            </li>
-          </ul>
-
-          <ul class="nav navbar-nav navbar-right">
-          </ul>
-
-        </div>
+    <div id="cache-pages">
+      <!-- cached ifames go here -->
+      <!-- <iframe id="current-page" class="stuckpage" src="http://www.mspaintadventures.com/?s=6&p=001901"></iframe> -->
+      <div class="jumbotron" id="hold-your-horses">
+        <h1>Hold your horses!</h1>
+        <p>You aren't meant to scroll down here: The content below is used to cache pages so they load quicker.</p>
+        <p>To advance to the next panel click on the "next" button at the top or click the left/right side of this page. </p>
+        <p><a class="btn btn-primary btn-lg nextlink" href="#next">Back to top</a></p>
       </div>
     </div>
 
+    <div id="sidebar">
+      <div id="sidebar-content">
 
-    <div class="container">
+        <a href="#prev" class="btn btn-default btn-lg btn-block" id="prevlink">
+          <span>
+            <h1>back</h1>
+          </span>
+        </a>
 
-      <div class="page-header" id="banner">
-        <div class="row">
-
-          <!-- fixes the navbar being over the pages -->
-          <div>&nbsp;</div>
-          <div class="cache-pages">
-            <!-- cached ifames go here -->
-            <!-- <iframe id="current-page" class="stuckpage" src="http://www.mspaintadventures.com/?s=6&p=001901"></iframe> -->
-            <div class="jumbotron" id="hold-your-horses">
-              <h1>Hold your horses!</h1>
-              <p>You aren't meant to scroll down here: The content below is used to cache pages so they load quicker.</p>
-              <p>To advance to the next panel click on the "next" button at the top or click the left/right side of this page. </p>
-              <p><a class="btn btn-primary btn-lg nextlink" href="#next">Back to top</a></p>
-            </div>
-          </div>
-        </div>
-      </div>
+        <a href="#next" class="btn btn-default btn-lg btn-block" id="nextlink">
+          <span>
+            <h1>next</h1>
+          </span>
+        </a>
+      <!-- <div id="sidebar-content"> -->
+    </div>
 
     <!-- JavaScript
         ================================================== -->

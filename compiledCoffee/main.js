@@ -20,6 +20,9 @@
 
   makeUrl = function(pageNum) {
     var php;
+    if (pageNum === 1900) {
+      pageNum = 1901;
+    }
     php = '';
     if (pageNum === 7680) {
       return 'http://www.mspaintadventures.com/007680/007680.html';
@@ -133,12 +136,12 @@
   };
 
   prependToCache = function(url) {
-    $('.cache-pages').prepend(makeIframe(url));
+    $('#cache-pages').prepend(makeIframe(url));
     return activateIframe(url);
   };
 
   appendToCache = function(url) {
-    $('.cache-pages').append(makeIframe(url));
+    $('#cache-pages').append(makeIframe(url));
     return activateIframe(url);
   };
 
@@ -219,9 +222,6 @@
     if (scroll() + $(window).height() > contentBottom) {
       return update(nextUrl(currentUrl()));
     } else {
-      console.log(contentBottom + 1 - $(window).height());
-      console.log(scroll() + scrollAmount());
-      console.log('');
       $("html, body").animate({
         scrollTop: Math.min(contentBottom + 10 - $(window).height(), scroll() + scrollAmount())
       });
