@@ -9,20 +9,45 @@ pad6 = (pageNum) ->
   str = '' + pageNum
   return pad.substring(0, pad.length - str.length) + str
 
+# hussie <3<
+isA6A5A1X2COMBO = (pageNum) -> return 7688 <= pageNum <= 7824
+
 makeUrl = (pageNum) ->
     php = ''
-    if pageNum == 6009              then php = 'cascade.php'
-    else if pageNum == 5982         then php = 'sbahj.php'
-    else if 5664 <= pageNum <= 5981 then php = 'scratch.php'
+    if pageNum == 7680 then return 'http://www.mspaintadventures.com/007680/007680.html'
+    else if pageNum == 6009          then php = 'cascade.php'
+    else if pageNum == 5982          then php = 'sbahj.php'
+    else if 5664 <= pageNum <= 5981  then php = 'scratch.php'
+    else if 8375 <= pageNum <= 8430  then php = 'ACT6ACT6.php'
+    else if 7614 <= pageNum <= 7677  then php = 'trickster.php'
+    else if isA6A5A1X2COMBO(pageNum) then php = 'ACT6ACT5ACT1x2COMBO.php'
 
     return baseURL + php + '?s=6&p=' + pad6(pageNum)
 
-containsPageNumber = (url) -> /p=(\d+)/.exec(url).length > 0
-getPageNumber = (url) -> parseInt(/p=(\d+)/.exec(url)[1])
+containsPageNumber = (url) ->
+    if url.startsWith 'http://www.mspaintadventures.com/007680/' then return true
+    return /p=(\d+)/.exec(url).length > 0
+
+getPageNumber = (url) ->
+    if url.startsWith 'http://www.mspaintadventures.com/007680/' then return 7680  # hussie <3<
+    return parseInt(/p=(\d+)/.exec(url)[1])
 
 # gets the URL for the next page given the current one
-nextUrl = (url) -> makeUrl(getPageNumber(url) + 1)
-prevUrl = (url) -> makeUrl(getPageNumber(url) - 1)
+nextUrl = (url) ->
+    pageNum = getPageNumber url
+    if isA6A5A1X2COMBO pageNum
+        pageNum += 2
+    else
+        pageNum += 1
+    return makeUrl pageNum
+
+prevUrl = (url) ->
+    pageNum = getPageNumber url
+    if isA6A5A1X2COMBO pageNum
+        pageNum -= 2
+    else
+        pageNum -= 1
+    return makeUrl pageNum
 
 window.currentUrl = -> $('#current-page').attr('src')  # note: this is src so that when the user has clicked a flash link, we progress to the page after that
 
@@ -123,7 +148,7 @@ update = (targetUrl) ->
     $('#current-page').removeAttr('id')
     getIframe(targetUrl).attr('id', 'current-page')
 
-    # move the view to look at the top iframe excluding the border
+    # move the view to top. skip the little bar at the top for standard pages
     if targetUrl.startsWith('http://www.mspaintadventures.com/?s=6&p=')
         scroll(29)
     else
@@ -194,6 +219,8 @@ window.onpopstate = (event) ->
 
 # call displayNextPage() if the user clicked on the background of the page
 $('body').mousedown (event) ->
+    if event.which != 1 then return  # we only care about the left mouse button
+
     target = $(event.target)
     if target.is('body>center') or target.is('body')
         event.preventDefault()
