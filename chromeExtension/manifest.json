@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+
+  "name": "ReadHomestuck extension",
+  "description": "Designed to be used with DomNomNom.com/ReadHomestuck for additional features (that requre iframe communication)",
+  "version": "1.1",
+
+  "browser_action": {
+    "default_icon": "favicon.png"
+  },
+  "permissions": [
+    "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["http://www.mspaintadventures.com/*"],
+      "css": [],
+      "js": ["jquery.js", "contentscript.js"],
+      "all_frames": true
+    }
+  ]
+}

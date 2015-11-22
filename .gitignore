@@ -1,1 +1,3 @@
 compiledCoffee/*.js.map
+chromeExtension.crx
+chromeExtension.pem
