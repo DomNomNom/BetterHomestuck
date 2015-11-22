@@ -43,10 +43,10 @@
           <ul class="nav navbar-nav">
             <li class="dropdown">
             <li>
-              <a class="prevlink">previous</a>
+              <a class="prevlink" href="#prev">previous</a>
             </li>
             <li>
-              <a class="nextlink">next</a>
+              <a class="nextlink" href="#next">next</a>
               <!-- onclick="displayNextPage()" -->
             </li>
           </ul>
@@ -63,20 +63,17 @@
 
       <div class="page-header" id="banner">
         <div class="row">
-          <!-- <h1>Yay</h1> -->
-          <!-- <div class="active-page well"> -->
-          <!-- </div> -->
 
+          <!-- fixes the navbar being over the pages -->
           <div>&nbsp;</div>
           <div class="cache-pages">
             <!-- cached ifames go here -->
-            <iframe id="current-page" class="stuckpage" src="http://www.mspaintadventures.com/?s=6&p=001901"></iframe>
+            <!-- <iframe id="current-page" class="stuckpage" src="http://www.mspaintadventures.com/?s=6&p=001901"></iframe> -->
             <div class="jumbotron" id="hold-your-horses">
               <h1>Hold your horses!</h1>
               <p>You aren't meant to scroll down here: The content below is used to cache pages so they load quicker.</p>
               <p>To advance to the next panel click on the "next" button at the top or click the left/right side of this page. </p>
-              <p><a class="btn btn-primary btn-lg nextlink">Back to top</a></p>
-               <!-- onclick="displayNextPage()" -->
+              <p><a class="btn btn-primary btn-lg nextlink" href="#next">Back to top</a></p>
             </div>
           </div>
         </div>
