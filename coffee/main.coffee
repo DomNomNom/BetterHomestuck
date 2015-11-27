@@ -147,13 +147,11 @@ updateFromHash = (hash) ->
 
     if hashParts.length > 2
         top = Math.max(top, parseInt(hashParts[2]))
-        console.log "parsed: #{top}"
 
 
     if url == currentUrl()
         # smooth scrolling to where we want to be
         $("html, body").animate({ scrollTop: top });
-        console.log "animating to: " + top
     else
         # move the view to top. skip the little bar at the top for standard pages
         scroll top  # hard/fast scrolling

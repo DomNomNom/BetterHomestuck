@@ -145,13 +145,11 @@
     }
     if (hashParts.length > 2) {
       top = Math.max(top, parseInt(hashParts[2]));
-      console.log("parsed: " + top);
     }
     if (url === currentUrl()) {
-      $("html, body").animate({
+      return $("html, body").animate({
         scrollTop: top
       });
-      return console.log("animating to: " + top);
     } else {
       scroll(top);
       return update(url);
