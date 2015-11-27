@@ -1,60 +1,16 @@
 
-cacheSize_forward = 4
-baseURL = 'http://www.mspaintadventures.com/'
+cacheSize_forward = 6
+defaultURL = 'http://www.mspaintadventures.com/?s=6&p=001901'
 
 
 
-# padds a integer with zeroes so it is of string length 6
-# 1902 --> '001902'
-pad6 = (pageNum) ->
-  pad = '000000'
-  str = '' + pageNum
-  return pad.substring(0, pad.length - str.length) + str
-
-# hussie <3<
-isA6A5A1X2COMBO = (pageNum) -> return 7688 <= pageNum <= 7824
-
-makeUrl = (pageNum) ->
-    if pageNum == 1900
-        pageNum = 1901
-
-    php = ''
-    if pageNum == 7680 then return 'http://www.mspaintadventures.com/007680/007680.html'
-    else if pageNum == 6009          then php = 'cascade.php'
-    else if pageNum == 5982          then php = 'sbahj.php'
-    else if 5664 <= pageNum <= 5981  then php = 'scratch.php'
-    else if 8375 <= pageNum <= 8430  then php = 'ACT6ACT6.php'
-    else if 7614 <= pageNum <= 7677  then php = 'trickster.php'
-    else if isA6A5A1X2COMBO(pageNum) then php = 'ACT6ACT5ACT1x2COMBO.php'
-
-    return baseURL + php + '?s=6&p=' + pad6(pageNum)
-
-containsPageNumber = (url) ->
-    if url.startsWith 'http://www.mspaintadventures.com/007680/' then return true
-    return /p=(\d+)/.exec(url).length > 0
-
-getPageNumber = (url) ->
-    if url.startsWith 'http://www.mspaintadventures.com/007680/' then return 7680  # hussie <3<
-    return parseInt(/p=(\d+)/.exec(url)[1])
-
-# gets the URL for the next page given the current one
-nextUrl = (url) ->
-    pageNum = getPageNumber url
-    if isA6A5A1X2COMBO pageNum
-        pageNum += 2
+# note: this is src so that when the user has clicked a flash link, we progress to the page after that
+window.currentUrl = ->
+    if $('#current-page')?
+        return $('#current-page').attr('src')
     else
-        pageNum += 1
-    return makeUrl pageNum
+        return null
 
-prevUrl = (url) ->
-    pageNum = getPageNumber url
-    if isA6A5A1X2COMBO pageNum
-        pageNum -= 2
-    else
-        pageNum -= 1
-    return makeUrl pageNum
-
-window.currentUrl = -> $('#current-page').attr('src')  # note: this is src so that when the user has clicked a flash link, we progress to the page after that
 
 window.getIframeUnsafe = (url) -> $(""".stuckpage[src="#{url}"]""")
 window.getIframe = (url) ->
@@ -70,6 +26,29 @@ inCache = (url) ->
 
 makeIframe = (url) -> """<iframe class="stuckpage" contentHeight="5" src="#{ url }"></iframe>"""
 
+
+
+
+# respond to messages from the iframees
+window.onmessage = (event) ->
+    data = event.data
+
+    # in case the user navigated within the iframe
+    if data.page != data.iframeSrc
+        if isHomestuckUrl data.page
+            removeFromCache data.iframeSrc  # this iframe is wrong
+            hash = makeHash data.page
+            updateFromHash hash  # navigate to what the user navigated to in the iframe
+            history.pushState({}, 'MORE HOMESTUCK', hash) # set the browserURL without leaving this page
+
+    #find out about the size of the iframe content. (requires a message from the iframe content)
+    if data.contentHeight
+        # console.log "#{ data.page } -->  #{ data.contentHeight }"
+        getIframe(data.page).attr('contentHeight', data.contentHeight)
+        setLinks()
+
+
+
 # communicate with the iframe (note: window.onmessage handles the response)
 sendMessageToIframe = (url) ->
     message = {
@@ -83,18 +62,6 @@ activateIframe = (url) ->
     iframe.load ->
         setTimeout(sendMessageToIframe, 0, url)  # js WAT
 
-# find out about the size of the iframe content. (requires a message from the iframe content)
-window.onmessage = (event) ->
-    data = event.data
-    if data.page != data.iframeSrc
-        if isHomestuckUrl data.page
-            removeFromCache data.iframeSrc  # this iframe is wrong
-            update data.page  # navigate to what the user navigated to in the iframe
-    if data.contentHeight
-        # console.log "#{ data.page } -->  #{ data.contentHeight }"
-        getIframe(data.page).attr('contentHeight', data.contentHeight)
-
-
 prependToCache = (url) ->
     $('#cache-pages').prepend makeIframe url
     activateIframe url
@@ -106,21 +73,6 @@ appendToCache = (url) ->
 removeFromCache = (url) ->
     getIframe(url).remove()
 
-# validates whether a URL is part of the comic
-isHomestuckUrl = (url) -> url.startsWith(baseURL) and containsPageNumber(url)
-
-# a convenience wrapper for $(window.top).scrollTop()
-scroll = (topOrNot) ->
-    $("html, body").stop()
-    if topOrNot?
-        $(window).scrollTop(topOrNot)
-    else
-        $(window).scrollTop()
-
-isFlashPage = (url) ->
-    if not containsPageNumber url
-        return true
-    return pad6(getPageNumber url) of window.flashPages
 
 # deals with going to a new page in the comic
 update = (targetUrl) ->
@@ -150,14 +102,9 @@ update = (targetUrl) ->
             appendToCache url
 
     # mark the current page (so that currentUrl() works)
+
     $('#current-page').removeAttr('id')
     getIframe(targetUrl).attr('id', 'current-page')
-
-    # move the view to top. skip the little bar at the top for standard pages
-    if targetUrl.startsWith('http://www.mspaintadventures.com/?s=6&p=')
-        scroll(29)
-    else
-        scroll(0)  # for special pages
 
 
     # move hold-your-horses below the current page
@@ -168,68 +115,95 @@ update = (targetUrl) ->
         url = $(@).attr('src')
         if url not in urlsToCache or (isFlashPage(url) and url != targetUrl)
             removeFromCache(url)
-        # for url of cache
-
 
     # try to make browser navigation work
     document.title = 'ReadHomestuck #' + getPageNumber(targetUrl)
-    setHash targetUrl
+    setLinks()
 
     console.assert inCache currentUrl()
 
 
-scrollAmount = () -> 0.6 * window.innerHeight - 20
-goNext = () ->
-    contentBottom = parseInt(getIframe(currentUrl()).attr('contentHeight')) - 15
-    # if the bottom of the view is below the bottom of the content, go to the next page
-    if scroll() + $(window).height() > contentBottom
-        update nextUrl currentUrl()
+
+
+# a convenience wrapper for $(window.top).scrollTop()
+scroll = (topOrNot) ->
+    if topOrNot?
+        $("html, body").stop()
+        $(window).scrollTop(topOrNot)
     else
-        # scroll(scroll() + 0.75 * window.innerHeight)
-        $("html, body").animate({ scrollTop: Math.min(
-            contentBottom + 5 - $(window).height(),
-            scroll() + scrollAmount()
-        )});
-        setHash currentUrl()
+        $(window).scrollTop()
 
-
-goPrev = () ->
-    if scroll() <= 30
-        update prevUrl currentUrl()
-    else
-        $("html, body").animate({ scrollTop: scroll() - scrollAmount() }, );
-        setHash currentUrl()
-
-
-# sets the browserURL without leaving this page
-setHash = (hash) ->
-    history.pushState({}, 'MORE HOMESTUCK', '#' + hash);
-
+# deals with scrolling to a location on the current page or updating to a new page
 updateFromHash = (hash) ->
-    if hash.startsWith('#' + baseURL)
-        update document.location.hash.substring(1)
-    else if hash.startsWith('#next') then goNext()
-    else if hash.startsWith('#prev') then goPrev()
-    else
-        update 'http://www.mspaintadventures.com/?s=6&p=001901' #currentUrl()
+    hashParts = hash.split('#')
 
-# any time the url is changed by the browser
+    url = defaultURL
+    if hashParts.length > 1
+        url = hashParts[1]
+
+    top = 0
+    if url.startsWith('http://www.mspaintadventures.com/?s=6&p=')
+        top = 29  # for standard pages skip the top bar
+
+    if hashParts.length > 2
+        top = Math.max(top, parseInt(hashParts[2]))
+        console.log "parsed: #{top}"
+
+
+    if url == currentUrl()
+        # smooth scrolling to where we want to be
+        $("html, body").animate({ scrollTop: top });
+        console.log "animating to: " + top
+    else
+        # move the view to top. skip the little bar at the top for standard pages
+        scroll top  # hard/fast scrolling
+        update url
+
+
+# given a homestuck url, returns the what the url-ending should be for the ReadHomestuck page
+makeHash = (url, top) ->
+    if not isHomestuckUrl url
+        console.warn "url is not a homestuck url: " + url
+
+    if url.indexOf('#') >= 0
+        console.warn 'oh no! homestuck url has a hash in it: ' + url
+        url = url.split('#')[0]
+
+    hash = '#' + url
+    if top?
+        hash += '#' + parseInt(Math.max(0, top))
+
+    return hash
+
+
+# any time the url is changed by the browser. eg. clicking one of the buttons
 window.onpopstate = (event) ->
     updateFromHash document.location.hash
 
 
+scrollAmount = () -> 0.6 * window.innerHeight - 20
 
-# call displayNextPage() if the user clicked on the background of the page
-$('body').mousedown (event) ->
-    if event.which != 1 then return  # we only care about the left mouse button
+# sets the links on the buttons to point to the correct hashes
+setLinks = () ->
+    if scroll() <= 30
+        prevhash = makeHash prevUrl currentUrl()
+    else
+        prevhash = makeHash(currentUrl(), scroll() - scrollAmount())
 
-    target = $(event.target)
-    if target.is('body>center') or target.is('body')
-        event.preventDefault()
-        if event.pageX < $(window).width() / 2
-            goPrev()
-        else
-            goNext()
+    # if the bottom of the view is below the bottom of the content, go to the next page
+    contentBottom = parseInt(getIframe(currentUrl()).attr('contentHeight')) - 15
+    if scroll() + $(window).height() > contentBottom
+        nexthash = makeHash nextUrl currentUrl()
+    else
+        nexthash = makeHash(currentUrl(), Math.min(
+            contentBottom + 5 - $(window).height(),
+            scroll() + scrollAmount()
+        ))
 
+    $('#prevlink').attr('href', prevhash)
+    $('#nextlink').attr('href', nexthash)
+
+
+$(window).scroll(setLinks)
 
 updateFromHash document.location.hash

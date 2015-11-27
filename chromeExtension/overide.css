@@ -1,0 +1,4 @@
+img {
+    /* Try to preserve the art style on high-dpi screens */
+    image-rendering: pixelated;
+}

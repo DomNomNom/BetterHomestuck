@@ -347,7 +347,7 @@ window.flashPages = {
 'http://www.mspaintadventures.com/?s=6&p=darkcage2': 1,
 'http://www.mspaintadventures.com/?s=6&p=pony': 1,
 'http://www.mspaintadventures.com/?s=6&p=pony2': 1,
-'http://www.mspaintadventures.com/DOTA': 1,
+'http://www.mspaintadventures.com/DOTA/': 1,
 'http://www.mspaintadventures.com/extras/PS_titlescreen/': 1,
 'http://www.mspaintadventures.com/shes8ack': 1,
 'http://www.mspaintadventures.com/007680/007680.html': 1,

@@ -14,7 +14,7 @@
   "content_scripts": [
     {
       "matches": ["http://www.mspaintadventures.com/*"],
-      "css": [],
+      "css": ["overide.css"],
       "js": ["jquery.js", "contentscript.js"],
       "all_frames": true
     }
