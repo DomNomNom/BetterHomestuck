@@ -18,6 +18,7 @@
   specialPrevLinks = {};
 
   specialPages = {
+    1901: 'http://www.mspaintadventures.com/?s=6',
     7680: 'http://www.mspaintadventures.com/007680/007680.html',
     6715: 'http://www.mspaintadventures.com/DOTA/'
   };

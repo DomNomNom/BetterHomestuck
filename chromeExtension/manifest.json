@@ -1,15 +1,22 @@
 {
   "manifest_version": 2,
 
-  "name": "ReadHomestuck extension",
-  "description": "Designed to be used with DomNomNom.com/ReadHomestuck for additional features (that requre iframe communication)",
+  "name": "Read Homestuck",
+  "short_name": "ReadHomestuck",
+  "description": "Improves the Homestuck reading experience",
   "version": "1.1.1",
 
   "browser_action": {
-    "default_icon": "favicon.png"
+    "default_icon": "icon48.png"
+  },
+  "icons": {
+     "16": "icon16.png",
+     "48": "icon48.png",
+    "128": "icon128.png"
   },
   "background": {
-    "scripts": ["background.js"]  // sets up the extension button click
+    "scripts": ["background.js"],
+    "persistent": false
   },
   "permissions": [
     "activeTab"
