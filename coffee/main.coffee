@@ -135,6 +135,9 @@ scroll = (topOrNot) ->
 
 # deals with scrolling to a location on the current page or updating to a new page
 updateFromHash = (hash) ->
+
+    document.cookie = "hash=" + hash
+
     hashParts = hash.split('#')
 
     url = defaultURL
@@ -202,6 +205,14 @@ setLinks = () ->
     $('#nextlink').attr('href', nexthash)
 
 
-$(window).scroll(setLinks)
 
-updateFromHash document.location.hash
+
+main = () ->
+    $(window).scroll(setLinks)
+
+    hash = document.location.hash
+    if not hash.startsWith('#') and document.cookie.startsWith('hash=#')
+        hash = document.cookie.split('hash=')[1]
+    updateFromHash hash
+
+main()
