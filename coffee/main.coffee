@@ -136,7 +136,10 @@ scroll = (topOrNot) ->
 # deals with scrolling to a location on the current page or updating to a new page
 updateFromHash = (hash) ->
 
-    document.cookie = "hash=" + hash
+    # make the browser remember this hash to go back to
+    expiry = new Date()
+    expiry.setDate(expiry.getDate() + 36000)  # set the cookie expiry date to be way in the future
+    document.cookie = "hash=#{ hash }; expires=#{ expiry.toUTCString() }"
 
     hashParts = hash.split('#')
 
@@ -219,7 +222,7 @@ main = () ->
 
     hash = document.location.hash
     if not hash.startsWith('#') and document.cookie.startsWith('hash=#')
-        hash = document.cookie.split('hash=')[1]
+        hash = document.cookie.split(';')[0].split('hash=')[1]
     updateFromHash hash
 
 main()

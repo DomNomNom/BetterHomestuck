@@ -133,8 +133,10 @@
   };
 
   updateFromHash = function(hash) {
-    var hashParts, top, url;
-    document.cookie = "hash=" + hash;
+    var expiry, hashParts, top, url;
+    expiry = new Date();
+    expiry.setDate(expiry.getDate() + 36000);
+    document.cookie = "hash=" + hash + "; expires=" + (expiry.toUTCString());
     hashParts = hash.split('#');
     url = defaultURL;
     if (hashParts.length > 1) {
@@ -209,7 +211,7 @@
     $(window).scroll(setLinks);
     hash = document.location.hash;
     if (!hash.startsWith('#') && document.cookie.startsWith('hash=#')) {
-      hash = document.cookie.split('hash=')[1];
+      hash = document.cookie.split(';')[0].split('hash=')[1];
     }
     return updateFromHash(hash);
   };
