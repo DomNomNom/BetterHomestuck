@@ -200,6 +200,12 @@
 
   main = function() {
     var hash;
+    if (String.prototype.startsWith == null) {
+      String.prototype.startsWith = function(str) {
+        console.log("sup: " + str);
+        return this.indexOf(str) === 0;
+      };
+    }
     $(window).scroll(setLinks);
     hash = document.location.hash;
     if (!hash.startsWith('#') && document.cookie.startsWith('hash=#')) {
