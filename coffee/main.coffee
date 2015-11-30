@@ -215,7 +215,6 @@ main = () ->
     # old browser ECMA6 compatibility
     if not String.prototype.startsWith?
         String.prototype.startsWith = (str) ->
-            console.log "sup: " + str
             @indexOf(str) == 0
 
     $(window).scroll(setLinks)
