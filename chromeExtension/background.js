@@ -2,7 +2,7 @@
 // point the browser at the ReadHomestuck page
 function openReadHomestuckPage() {
     chrome.tabs.create({
-        url: "http://DomNomNom.com/ReadHomestuck/",
+        url: "http://DomNomNom.com/BetterHomestuck/",
         active: true,
     });
 }
