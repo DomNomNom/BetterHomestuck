@@ -209,8 +209,12 @@
     }
     $(window).scroll(setLinks);
     hash = document.location.hash;
-    if (!hash.startsWith('#') && document.cookie.startsWith('hash=#')) {
-      hash = document.cookie.split(';')[0].split('hash=')[1];
+    if (!(hash.startsWith('#') && isHomestuckUrl(hash.split('#')[1]))) {
+      if (document.cookie.startsWith('hash=#')) {
+        hash = document.cookie.split(';')[0].split('hash=')[1];
+      } else {
+        hash = makeHash(defaultURL);
+      }
     }
     return updateFromHash(hash);
   };

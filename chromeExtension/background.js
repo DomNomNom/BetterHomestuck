@@ -1,6 +1,6 @@
 
-// point the browser at the ReadHomestuck page
-function openReadHomestuckPage() {
+// point the browser at the BetterHomestuck page
+function openBetterHomestuckPage() {
     chrome.tabs.create({
         url: "http://DomNomNom.com/BetterHomestuck/",
         active: true,
@@ -8,11 +8,11 @@ function openReadHomestuckPage() {
 }
 
 // execute the above when the extension's icon is clicked
-chrome.browserAction.onClicked.addListener(openReadHomestuckPage);
+chrome.browserAction.onClicked.addListener(openBetterHomestuckPage);
 
 // execute on install (but not update)
 chrome.runtime.onInstalled.addListener(function (details) {
     if (details.reason === "install") {
-        openReadHomestuckPage();
+        openBetterHomestuckPage();
     }
 });

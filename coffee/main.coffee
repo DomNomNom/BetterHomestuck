@@ -164,7 +164,7 @@ updateFromHash = (hash) ->
         update url
 
 
-# given a homestuck url, returns the what the url-ending should be for the ReadHomestuck page
+# given a homestuck url, returns the what the url-ending should be for the BetterHomestuck page
 makeHash = (url, top) ->
     if not isHomestuckUrl url
         console.warn "url is not a homestuck url: " + url
@@ -220,8 +220,11 @@ main = () ->
     $(window).scroll(setLinks)
 
     hash = document.location.hash
-    if not hash.startsWith('#') and document.cookie.startsWith('hash=#')
-        hash = document.cookie.split(';')[0].split('hash=')[1]
+    if not (hash.startsWith('#') and isHomestuckUrl(hash.split('#')[1])) # if url is not a valid hash
+        if document.cookie.startsWith('hash=#')  # if we have a cookie
+            hash = document.cookie.split(';')[0].split('hash=')[1]
+        else
+            hash = makeHash defaultURL
     updateFromHash hash
 
 main()
