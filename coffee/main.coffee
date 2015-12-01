@@ -46,6 +46,8 @@ window.onmessage = (event) ->
         # console.log "#{ data.page } -->  #{ data.contentHeight }"
         getIframe(data.page).attr('contentHeight', data.contentHeight)
         setLinks()
+    if data.interactive
+        getIframe(data.page).attr('interactive', true)
 
 
 
@@ -162,6 +164,7 @@ updateFromHash = (hash) ->
         # move the view to top. skip the little bar at the top for standard pages
         scroll top  # hard/fast scrolling
         update url
+    mainelement().focus()
 
 
 # given a homestuck url, returns the what the url-ending should be for the BetterHomestuck page
@@ -208,6 +211,11 @@ setLinks = () ->
     $('#nextlink').attr('href', nexthash)
 
 
+mainelement = () ->
+    i = getIframe(currentUrl())
+    if i.attr('interactive')
+      return i
+    return document.getElementById('nextlink')
 
 
 main = () ->
