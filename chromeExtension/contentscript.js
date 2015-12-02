@@ -50,11 +50,15 @@ window.onmessage = function (event) {
         contentHeight += 50
       }
 
+      var interaction = mainTable.find('embed, canvas')
+      if (interaction) interaction.focus()
+
       var message = {
         // 'messagetype': 'pageload',
         'page': document.location+'',
         'contentHeight': contentHeight,
         'iframeSrc': event.data.iframeSrc,
+        'interactive': interaction.length !== 0 // Needs a better test since the 'choose your path' flashes aren't really that interactive
       }
 
 
