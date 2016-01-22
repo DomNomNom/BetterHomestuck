@@ -31,9 +31,9 @@ specialPrevLinks = {}
 
 # special pages that do not have "s=6&p=......" in them
 specialPages = {
-    1901: 'http://www.mspaintadventures.com/?s=6',
-    7680: 'http://www.mspaintadventures.com/007680/007680.html'
-    6715: 'http://www.mspaintadventures.com/DOTA/'
+    1901:  baseURL + '?s=6',
+    7680:  baseURL + '007680/007680.html'
+    6715:  baseURL + 'DOTA/'
 }
 specialPages_reverse = {}
 for pageNum, url of specialPages
@@ -64,6 +64,8 @@ makeUrl = (pageNum) ->
     else if pageNum == 5982          then php = 'sbahj.php'
     else if 5664 <= pageNum <= 5981  then php = 'scratch.php'
     else if 8375 <= pageNum <= 8430  then php = 'ACT6ACT6.php'
+    else if 8750 <= pageNum <= 8802  then php = 'ACT6ACT6.php'
+    else if 9309 <= pageNum <= 9347  then php = 'ACT6ACT6.php'
     else if 7614 <= pageNum <= 7677  then php = 'trickster.php'
     else if isA6A5A1X2COMBO(pageNum) then php = 'ACT6ACT5ACT1x2COMBO.php'
 

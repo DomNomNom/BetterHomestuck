@@ -18,9 +18,9 @@
   specialPrevLinks = {};
 
   specialPages = {
-    1901: 'http://www.mspaintadventures.com/?s=6',
-    7680: 'http://www.mspaintadventures.com/007680/007680.html',
-    6715: 'http://www.mspaintadventures.com/DOTA/'
+    1901: baseURL + '?s=6',
+    7680: baseURL + '007680/007680.html',
+    6715: baseURL + 'DOTA/'
   };
 
   specialPages_reverse = {};
@@ -57,6 +57,10 @@
     } else if ((5664 <= pageNum && pageNum <= 5981)) {
       php = 'scratch.php';
     } else if ((8375 <= pageNum && pageNum <= 8430)) {
+      php = 'ACT6ACT6.php';
+    } else if ((8750 <= pageNum && pageNum <= 8802)) {
+      php = 'ACT6ACT6.php';
+    } else if ((9309 <= pageNum && pageNum <= 9347)) {
       php = 'ACT6ACT6.php';
     } else if ((7614 <= pageNum && pageNum <= 7677)) {
       php = 'trickster.php';
