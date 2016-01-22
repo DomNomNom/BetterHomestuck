@@ -1,0 +1,20 @@
+application: better-homestuck
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+
+- url: /(.+)
+  secure: never
+  static_files: website/\1
+  upload: website/(.*)
+
+- url: /
+  secure: never
+  static_files: website/index.html
+  upload: website/index.html
+
+skip_files:
+- ^(.*/)?app\.yaml
