@@ -28,41 +28,47 @@ makeIframe = (url) -> """<iframe class="stuckpage" contentHeight="5" src="#{ url
 
 
 
-
 # respond to messages from the iframees
 window.onmessage = (event) ->
     data = event.data
 
-    # in case the user navigated within the iframe
-    if data.page != data.iframeSrc
-        if isHomestuckUrl data.page
-            removeFromCache data.iframeSrc  # this iframe is wrong
-            hash = makeHash data.page
-            updateFromHash hash  # navigate to what the user navigated to in the iframe
-            history.pushState({}, 'MORE HOMESTUCK', hash) # set the browserURL without leaving this page
-
     #find out about the size of the iframe content. (requires a message from the iframe content)
     if data.contentHeight
-        # console.log "#{ data.page } -->  #{ data.contentHeight }"
-        getIframe(data.page).attr('contentHeight', data.contentHeight)
-        setLinks()
+        # console.log "contentHeight (#{ data.iframeSrc },  #{ data.page }) -->  #{ data.contentHeight }"
+        getIframe(data.iframeSrc).attr('contentHeight', data.contentHeight)
     if data.interactive
         getIframe(data.page).attr('interactive', true)
 
+    # is this information regards the current iframe
+    if currentUrl() in [data.iframeSrc, data.page]
+        if data.iframeSrc != data.page
+            history.pushState({}, 'Better Homestuck', makeHash data.page) # set the browserURL without leaving this page
+            # console.log "The iframe url changed: #{ currentUrl() } --> #{ data.page }"
+        setLinks(data.page)
 
 
 # communicate with the iframe (note: window.onmessage handles the response)
-sendMessageToIframe = (url) ->
+sendMessageToIframe = (iframe, url) ->
+    # if getIframeUnsafe(url).length == 0
+    #     console.log 'iframe src changed.'
     message = {
         'messagetype': 'your iframeSrc is'
         'iframeSrc': url
     }
-    getIframe(url)[0].contentWindow.postMessage(message, '*')
+    iframe[0].contentWindow.postMessage(message, '*')
 
 activateIframe = (url) ->
     iframe = getIframe(url)
     iframe.load ->
-        setTimeout(sendMessageToIframe, 0, url)  # js WAT
+        sendMessageToIframe(iframe, url)
+        # setTimeout(sendMessageToIframe, 0, iframe, url)  # js WAT
+
+# sometimes we get redirected and the iframe src goes out of sync with what we expect the page to be
+# this is a hack to get around that
+pollCurrentPage = () ->
+    sendMessageToIframe(getIframe(currentUrl()), currentUrl())
+
+
 
 prependToCache = (url) ->
     $('#cache-pages').prepend makeIframe url
@@ -78,7 +84,7 @@ removeFromCache = (url) ->
 
 # deals with going to a new page in the comic
 update = (targetUrl) ->
-
+    console.log ('updating: ' + targetUrl)
     console.assert isHomestuckUrl targetUrl
 
     # figure out which urls we want in the cache
@@ -119,7 +125,7 @@ update = (targetUrl) ->
             removeFromCache(url)
 
     # try to make browser navigation work
-    document.title = 'ReadHomestuck #' + getPageNumber(targetUrl)
+    document.title = 'Better Homestuck #' + getPageNumber(targetUrl)
     setLinks()
 
     console.assert inCache currentUrl()
@@ -128,10 +134,10 @@ update = (targetUrl) ->
 
 
 # a convenience wrapper for $(window.top).scrollTop()
-scroll = (topOrNot) ->
-    if topOrNot?
+scroll = (topMaybe) ->
+    if topMaybe?
         $("html, body").stop()
-        $(window).scrollTop(topOrNot)
+        $(window).scrollTop(topMaybe)
     else
         $(window).scrollTop()
 
@@ -157,7 +163,7 @@ updateFromHash = (hash) ->
         top = Math.max(top, parseInt(hashParts[2]))
 
 
-    if url == currentUrl()
+    if url == currentUrl() || (currentUrl()? and getPageNumber(url) == getPageNumber(currentUrl()))
         # smooth scrolling to where we want to be
         $("html, body").animate({ scrollTop: top });
     else
@@ -185,24 +191,28 @@ makeHash = (url, top) ->
 
 # any time the url is changed by the browser. eg. clicking one of the buttons
 window.onpopstate = (event) ->
+    console.log "popstate: " + document.location.hash
     updateFromHash document.location.hash
 
 
 scrollAmount = () -> 0.6 * window.innerHeight - 20
 
 # sets the links on the buttons to point to the correct hashes
-setLinks = () ->
+setLinks = (url) ->
+    if not url?
+        url = currentUrl()
+
     if scroll() <= 30
-        prevhash = makeHash prevUrl currentUrl()
+        prevhash = makeHash prevUrl url
     else
-        prevhash = makeHash(currentUrl(), scroll() - scrollAmount())
+        prevhash = makeHash(url, scroll() - scrollAmount())
 
     # if the bottom of the view is below the bottom of the content, go to the next page
     contentBottom = parseInt(getIframe(currentUrl()).attr('contentHeight')) - 15
     if scroll() + $(window).height() > contentBottom
-        nexthash = makeHash nextUrl currentUrl()
+        nexthash = makeHash nextUrl url
     else
-        nexthash = makeHash(currentUrl(), Math.min(
+        nexthash = makeHash(url, Math.min(
             contentBottom + 5 - $(window).height(),
             scroll() + scrollAmount()
         ))
@@ -225,7 +235,7 @@ main = () ->
         String.prototype.startsWith = (str) ->
             @indexOf(str) == 0
 
-    $(window).scroll(setLinks)
+    $(window).scroll(() -> setLinks())
 
     hash = document.location.hash
     if not (hash.startsWith('#') and isHomestuckUrl(hash.split('#')[1])) # if url is not a valid hash
@@ -234,5 +244,7 @@ main = () ->
         else
             hash = makeHash defaultURL
     updateFromHash hash
+
+    setInterval(pollCurrentPage, 500);
 
 main()

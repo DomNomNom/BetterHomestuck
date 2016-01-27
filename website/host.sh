@@ -1,3 +1,4 @@
 #!/bin/bash
 coffee -m -o compiledCoffee/ -cw coffee/ &
-python3 -m http.server &> /dev/null &
+~/Documents/google_appengine/dev_appserver.py .. &
+#python3 -m http.server &> /dev/null &

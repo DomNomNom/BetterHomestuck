@@ -58,7 +58,7 @@
       php = 'scratch.php';
     } else if ((8375 <= pageNum && pageNum <= 8430)) {
       php = 'ACT6ACT6.php';
-    } else if ((8750 <= pageNum && pageNum <= 8802)) {
+    } else if ((8753 <= pageNum && pageNum <= 8802)) {
       php = 'ACT6ACT6.php';
     } else if ((9309 <= pageNum && pageNum <= 9347)) {
       php = 'ACT6ACT6.php';
