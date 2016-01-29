@@ -41,8 +41,9 @@ window.onmessage = (event) ->
 
     # is this information regards the current iframe
     if currentUrl() in [data.iframeSrc, data.page]
-        if data.iframeSrc != data.page
+        if data.iframeSrc != data.page and document.location.hash != makeHash data.page
             history.pushState({}, 'Better Homestuck', makeHash data.page) # set the browserURL without leaving this page
+
             # console.log "The iframe url changed: #{ currentUrl() } --> #{ data.page }"
         setLinks(data.page)
 

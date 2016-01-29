@@ -47,7 +47,7 @@
       getIframe(data.page).attr('interactive', true);
     }
     if ((ref = currentUrl()) === data.iframeSrc || ref === data.page) {
-      if (data.iframeSrc !== data.page) {
+      if (data.iframeSrc !== data.page && document.location.hash !== makeHash(data.page)) {
         history.pushState({}, 'Better Homestuck', makeHash(data.page));
       }
       return setLinks(data.page);
