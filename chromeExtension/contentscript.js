@@ -7,13 +7,15 @@ $(centerView())
 $(window).resize(centerView)
 
 
-$('.spoiler').attr('style', '')  // show the chat logs
-$('.button').attr('style', 'display: none;')  // hide the "hide/show" buttons
+if (document.location.toString().indexOf("p=007326") < 0) {  // special case, because hussie
+  $('.spoiler').attr('style', '')  // show the chat logs
+  $('.button').attr('style', 'display: none;')  // hide the "hide/show" buttons
 
+  // I think this padding is unnecessary
+  $('img[src="http://cdn.mspaintadventures.com/images/v2_blanksquare2.gif"]').remove()
+  $('img[src="http://cdn.mspaintadventures.com/images/v2_blanksquare3.gif"]').remove()
+}
 
-// I think this padding is unnecessary
-$('img[src="http://cdn.mspaintadventures.com/images/v2_blanksquare2.gif"]').remove()
-$('img[src="http://cdn.mspaintadventures.com/images/v2_blanksquare3.gif"]').remove()
 
 // remove empty paragraphs
 $('p').each(function() {
