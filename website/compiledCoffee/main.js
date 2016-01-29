@@ -44,7 +44,7 @@
       getIframe(data.iframeSrc).attr('contentHeight', data.contentHeight);
     }
     if (data.interactive) {
-      getIframe(data.page).attr('interactive', true);
+      getIframe(data.iframeSrc).attr('interactive', true);
     }
     if ((ref = currentUrl()) === data.iframeSrc || ref === data.page) {
       if (data.iframeSrc !== data.page && document.location.hash !== makeHash(data.page)) {

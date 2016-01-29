@@ -32,12 +32,12 @@ makeIframe = (url) -> """<iframe class="stuckpage" contentHeight="5" src="#{ url
 window.onmessage = (event) ->
     data = event.data
 
-    #find out about the size of the iframe content. (requires a message from the iframe content)
+    # find out about the size of the iframe content. (requires a message from the iframe content)
     if data.contentHeight
         # console.log "contentHeight (#{ data.iframeSrc },  #{ data.page }) -->  #{ data.contentHeight }"
         getIframe(data.iframeSrc).attr('contentHeight', data.contentHeight)
     if data.interactive
-        getIframe(data.page).attr('interactive', true)
+        getIframe(data.iframeSrc).attr('interactive', true)
 
     # is this information regards the current iframe
     if currentUrl() in [data.iframeSrc, data.page]
