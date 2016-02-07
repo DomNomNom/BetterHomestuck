@@ -343,8 +343,8 @@ main = () ->
     $('#settings-reset-all').click resetAllSettings
     $(document).keydown (e) ->
         switch(e.which)
-            when 37 then updateFromHash $('#prevlink').attr('href') # left
-            when 39 then updateFromHash $('#nextlink').attr('href') # right
+            when 37 then $('#prevlink')[0].click() # left
+            when 39 then $('#nextlink')[0].click() # right
 
     # populate the settings from cookie or defaultSettings
     for setting, defaultSetting of defaultSettings

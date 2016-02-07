@@ -362,9 +362,9 @@
     $(document).keydown(function(e) {
       switch (e.which) {
         case 37:
-          return updateFromHash($('#prevlink').attr('href'));
+          return $('#prevlink')[0].click();
         case 39:
-          return updateFromHash($('#nextlink').attr('href'));
+          return $('#nextlink')[0].click();
       }
     });
     for (setting in defaultSettings) {
