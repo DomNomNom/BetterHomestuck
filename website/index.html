@@ -41,20 +41,73 @@
     </div>
 
     <div id="sidebar">
-      <div id="sidebar-content">
-
         <a href="#prev" class="btn btn-default btn-lg btn-block" id="prevlink">
           <span>
-            <h1>back</h1>
+            <h1>&lt;==</h1>
           </span>
         </a>
 
         <a href="#next" class="btn btn-default btn-lg btn-block" id="nextlink">
           <span>
-            <h1>next</h1>
+            <h1>==&gt;</h1>
           </span>
         </a>
-      <!-- <div id="sidebar-content"> -->
+        <a class="btn btn-default btn-lg btn-block" id="settings-toggle">
+          <span>
+            <h2>
+              <span class="glyphicon glyphicon-cog"></span>
+            </h2>
+          </span>
+        </a>
+    </div>
+
+    <div id="settings">
+      <span>
+        <h1>Settings</h1>
+      </span>
+
+      <form role="form">
+
+        <div class="form-group">
+          <label for="page-cache-size">Number of pages preloaded:</label>
+          <input id="page-cache-size" type="number" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="sidebar-size">Sidebar width: (%)</label>
+          <input id="sidebar-size" type="number" class="form-control">
+        </div>
+
+        <div>&nbsp;</div>
+
+        <div class="form-group">
+          <div class="checkbox">
+            <label for="scroll-enabled"><input id="scroll-enabled" type="checkbox" checked> Buttons scroll unless at the end of a page</label>
+          </div>
+        </div>
+        <div id="scroll-settings">
+          <div class="form-group">
+            <label for="scroll-duration">Scroll duration: (ms)</label>
+            <input id="scroll-duration" type="number" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="scroll-amount-percent">Scroll down amount: (percent of browser height)</label>
+            <input id="scroll-amount-percent" type="number" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="scroll-amount-pixel">Scroll down amount: (pixels)</label>
+            <input id="scroll-amount-pixel" type="number" class="form-control">
+          </div>
+        </div>
+
+      </form>
+      <a id="settings-reset-all" class="btn btn-default btn-lg btn-block">
+        <span>
+          Restore defaults
+        </span>
+      </a>
     </div>
 
     <!-- JavaScript

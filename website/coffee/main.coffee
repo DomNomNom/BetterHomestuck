@@ -1,6 +1,104 @@
 
-cacheSize_forward = 6
 defaultURL = 'http://www.mspaintadventures.com/?s=6&p=001901'
+
+defaultSettings = {
+    'page-cache-size': 5
+    'scroll-enabled': true
+    'scroll-duration': 400
+    'scroll-amount-percent': 60
+    'scroll-amount-pixel': -20
+    'sidebar-size': 25
+}
+
+settingClamps = {
+    'page-cache-size': [0, 20]
+    'scroll-duration': [0, 10000]
+    'sidebar-size': [1, 60]
+}
+
+getSetting = (setting) ->
+    console.assert not setting.startsWith('#')
+    console.assert setting of defaultSettings
+    defaultSetting = defaultSettings[setting]
+    switch typeof defaultSetting
+        when "number"
+            val = parseInt $('#' + setting).val()
+            if isNaN val
+                console.warn "using defaultSetting value for #{setting} due to NaN from field"
+                return defaultSettings[setting]
+            return val
+        when "boolean"
+            return $('#' + setting).is(':checked')
+        else
+            console.warn "requested setting is of a weird type: #{ typeof defaultSetting }"
+            return defaultSetting
+
+
+setSetting = (setting, value) ->
+    console.assert not setting.startsWith('#')
+    console.assert setting of defaultSettings
+    defaultSetting = defaultSettings[setting]
+    console.assert ((typeof value) == typeof defaultSetting)
+
+    switch typeof value
+        when "number"  then $('#' + setting).val(value)
+        when "boolean" then $('#' + setting).prop('checked', value);
+        else
+            console.warn "requested setting is of a weird type: #{ typeof defaultSetting }"
+            return defaultSetting
+
+onSettingsChanged = () ->
+    for setting, minMax of settingClamps
+        min = minMax[0]
+        max = minMax[1]
+        if getSetting(setting) > max then setSetting(setting, max)
+        if getSetting(setting) < min then setSetting(setting, min)
+
+    # set the cookies
+    for setting, defaultSetting of defaultSettings
+        setCookie(setting, getSetting(setting))
+
+    # iff scroll is disabled, disable sub-settings
+    scrollSubSettings = [
+        'scroll-duration'
+        'scroll-amount-percent'
+        'scroll-amount-pixel'
+    ]
+    scrollEnabled = getSetting('scroll-enabled')
+    for setting in scrollSubSettings
+        $('#' + setting).prop('disabled', not scrollEnabled);
+
+    sideWidth = getSetting('sidebar-size')
+    $('#sidebar').width(sideWidth + '%')
+    $('#cache-pages').width((100 - sideWidth) + '%')
+    $('#settings').css('right', sideWidth + '%')
+
+resetAllSettings = () ->
+    if not window.confirm("Reset all settings?") then return
+    for setting, defaultSetting of defaultSettings
+        setSetting(setting, defaultSetting)
+    onSettingsChanged()
+
+
+setCookie = (name, value) ->
+    expiry = new Date()
+    expiry.setDate(expiry.getDate() + 36000)  # set the cookie expiry date to be way in the future
+    document.cookie = "#{ name }=#{ value }; expires=#{ expiry.toUTCString() }"
+
+getCookie = (cookieName, defaultSetting='') ->
+    nameEquals = cookieName + '='
+    for cookie in document.cookie.split(';')
+        cookie = cookie.trim()
+        if cookie.startsWith(nameEquals)
+            value = cookie.substring(nameEquals.length).trim()
+            switch typeof defaultSetting
+                when "string"  then return value
+                when "number"  then return parseInt value
+                when "boolean" then return value == "true"
+                else console.warn "defaultSetting for #{ cookieName } had a bad type: #{ typeof defaultSetting }"
+
+    console.log "did not find cookie for name: #{ cookieName }"
+    return defaultSetting
 
 
 
@@ -91,6 +189,7 @@ update = (targetUrl) ->
     # figure out which urls we want in the cache
     urlsToCache = [targetUrl]
     url = targetUrl
+    cacheSize_forward = getSetting 'page-cache-size'
     for i in [0..cacheSize_forward]
         url = nextUrl url
         urlsToCache.push(url)
@@ -146,9 +245,7 @@ scroll = (topMaybe) ->
 updateFromHash = (hash) ->
 
     # make the browser remember this hash to go back to
-    expiry = new Date()
-    expiry.setDate(expiry.getDate() + 36000)  # set the cookie expiry date to be way in the future
-    document.cookie = "hash=#{ hash }; expires=#{ expiry.toUTCString() }"
+    setCookie('hash', hash)
 
     hashParts = hash.split('#')
 
@@ -166,7 +263,10 @@ updateFromHash = (hash) ->
 
     if url == currentUrl() || (currentUrl()? and getPageNumber(url) == getPageNumber(currentUrl()))
         # smooth scrolling to where we want to be
-        $("html, body").animate({ scrollTop: top });
+        $("html, body").animate(
+            { scrollTop: top },
+            duration=getSetting 'scroll-duration'
+        )
     else
         # move the view to top. skip the little bar at the top for standard pages
         scroll top  # hard/fast scrolling
@@ -196,21 +296,21 @@ window.onpopstate = (event) ->
     updateFromHash document.location.hash
 
 
-scrollAmount = () -> 0.6 * window.innerHeight - 20
+scrollAmount = () -> getSetting('scroll-amount-percent') * window.innerHeight + getSetting('scroll-amount-pixel')
 
 # sets the links on the buttons to point to the correct hashes
 setLinks = (url) ->
     if not url?
         url = currentUrl()
 
-    if scroll() <= 30
+    if scroll() <= 30 or not getSetting('scroll-enabled')
         prevhash = makeHash prevUrl url
     else
         prevhash = makeHash(url, scroll() - scrollAmount())
 
     # if the bottom of the view is below the bottom of the content, go to the next page
     contentBottom = parseInt(getIframe(currentUrl()).attr('contentHeight')) - 15
-    if scroll() + $(window).height() > contentBottom
+    if scroll() + $(window).height() > contentBottom or not getSetting('scroll-enabled')
         nexthash = makeHash nextUrl url
     else
         nexthash = makeHash(url, Math.min(
@@ -238,14 +338,29 @@ main = () ->
 
     $(window).scroll(() -> setLinks())
 
+    $('#settings-toggle').click -> $('#settings').toggle()
+    $('#settings-reset-all').click resetAllSettings
+
+    # populate the settings from cookie or defaultSettings
+    for setting, defaultSetting of defaultSettings
+        console.assert $('#'+setting).length == 1  # check that there's a html setting for each setting
+        value = getCookie(setting, defaultSetting)
+        console.assert ((typeof value) == typeof defaultSetting)
+        setSetting(setting, value)
+
+    onSettingsChanged()
+
+    # call onSettingsChanged when values are changedget the
+    for setting, defaultSetting of defaultSettings
+        $('#' + setting).change(onSettingsChanged)
+
     hash = document.location.hash
     if not (hash.startsWith('#') and isHomestuckUrl(hash.split('#')[1])) # if url is not a valid hash
-        if document.cookie.startsWith('hash=#')  # if we have a cookie
-            hash = document.cookie.split(';')[0].split('hash=')[1]
-        else
+        hash = getCookie('hash')
+        if hash is ''
             hash = makeHash defaultURL
     updateFromHash hash
 
-    setInterval(pollCurrentPage, 500);
+    setInterval(pollCurrentPage, 500)
 
 main()
