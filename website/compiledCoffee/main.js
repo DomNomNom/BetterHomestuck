@@ -359,6 +359,14 @@
       return $('#settings').toggle();
     });
     $('#settings-reset-all').click(resetAllSettings);
+    $(document).keydown(function(e) {
+      switch (e.which) {
+        case 37:
+          return updateFromHash($('#prevlink').attr('href'));
+        case 39:
+          return updateFromHash($('#nextlink').attr('href'));
+      }
+    });
     for (setting in defaultSettings) {
       defaultSetting = defaultSettings[setting];
       console.assert($('#' + setting).length === 1);

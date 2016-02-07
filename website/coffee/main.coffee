@@ -336,10 +336,15 @@ main = () ->
         String.prototype.startsWith = (str) ->
             @indexOf(str) == 0
 
+    # event listeners
     $(window).scroll(() -> setLinks())
 
     $('#settings-toggle').click -> $('#settings').toggle()
     $('#settings-reset-all').click resetAllSettings
+    $(document).keydown (e) ->
+        switch(e.which)
+            when 37 then updateFromHash $('#prevlink').attr('href') # left
+            when 39 then updateFromHash $('#nextlink').attr('href') # right
 
     # populate the settings from cookie or defaultSettings
     for setting, defaultSetting of defaultSettings
