@@ -110,6 +110,16 @@ window.isFlashPage = (url) ->
         return true
     return pad6(getPageNumber url) of window.flashPages
 
+window.pageRequiresKeyboard = (url) ->
+    if not containsPageNumber url
+        return false
+    pageNumber = pad6(getPageNumber url)
+    if pageNumber not of window.flashPages
+        return false
+    return window.flashPages[pageNumber] & 2  # bitmasking
+
+
+
 # validates whether a URL is part of the comic
 window.isHomestuckUrl = (url) -> url.startsWith(baseURL) and containsPageNumber(url)
 

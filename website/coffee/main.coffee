@@ -19,6 +19,8 @@ settingClamps = {
     'sidebar-size': [1, 60]
 }
 
+
+
 getSetting = (setting) ->
     console.assert not setting.startsWith('#')
     console.assert setting of defaultSettings
@@ -127,16 +129,19 @@ getCookie = (cookieName, defaultSetting='') ->
 
 
 # note: this is src so that when the user has clicked a flash link, we progress to the page after that
-window.currentUrl = ->
-    if $('#current-page')?
-        return $('#current-page').attr('src')
-    else
-        return null
+_currentUrl = null
+window.currentUrl = () ->
+    return _currentUrl
 
 
 window.getIframeUnsafe = (url) -> $(""".stuckpage[src="#{url}"]""")
 window.getIframe = (url) ->
     iframe = getIframeUnsafe url
+    console.assert iframe.length == 1
+    return iframe
+window.haveCurrentIframe = () -> $('#current-page').length > 0
+window.getCurrentIframe = () ->
+    iframe = $('#current-page')
     console.assert iframe.length == 1
     return iframe
 
@@ -158,16 +163,28 @@ window.onmessage = (event) ->
     if data.contentHeight
         # console.log "contentHeight (#{ data.iframeSrc },  #{ data.page }) -->  #{ data.contentHeight }"
         getIframe(data.iframeSrc).attr('contentHeight', data.contentHeight)
-    if data.interactive
-        getIframe(data.iframeSrc).attr('interactive', true)
 
-    # is this information regards the current iframe
-    if currentUrl() in [data.iframeSrc, data.page]
-        if data.iframeSrc != data.page and document.location.hash != makeHash data.page
+    # is this information regarding the current iframe?
+    if getCurrentIframe().attr('src') == data.iframeSrc
+        if currentUrl() != data.page
+            _currentUrl = data.page
+            scroll getTopLocation(currentUrl())
             history.pushState({}, 'Better Homestuck', makeHash data.page) # set the browserURL without leaving this page
 
             # console.log "The iframe url changed: #{ currentUrl() } --> #{ data.page }"
         setLinks(data.page)
+
+
+    # switch focus out of the iframe unless it has keyboard interaction
+    if document.activeElement.tagName == 'IFRAME'
+        focusElement().focus()
+
+focusElement = () ->
+    if pageRequiresKeyboard(currentUrl())
+        return getCurrentIframe()
+    return document.getElementById('nextlink')
+
+
 
 
 # communicate with the iframe (note: window.onmessage handles the response)
@@ -189,7 +206,7 @@ activateIframe = (url) ->
 # sometimes we get redirected and the iframe src goes out of sync with what we expect the page to be
 # this is a hack to get around that
 pollCurrentPage = () ->
-    sendMessageToIframe(getIframe(currentUrl()), currentUrl())
+    sendMessageToIframe(getCurrentIframe(), getCurrentIframe().attr('src'))
 
 
 
@@ -218,6 +235,12 @@ update = (targetUrl) ->
         url = nextUrl url
         urlsToCache.push(url)
 
+    # if the current page has been navigated in-iframe, remove it
+    # note: this deals with inner-forward, outer-backward navigation
+    if haveCurrentIframe() and getCurrentIframe().attr('src') != currentUrl()
+        console.log "removing iframe due to content change: #{ getCurrentIframe().attr('src') }  #{ currentUrl() }"
+        removeFromCache(getCurrentIframe().attr('src'))
+
     # prepend any missing pages that are logically before any element in the cache
     for i in [urlsToCache.length-1 .. 0] by -1
         url = urlsToCache[i]
@@ -233,8 +256,8 @@ update = (targetUrl) ->
         if (not inCache(url)) and not isFlashPage url
             appendToCache url
 
-    # mark the current page (so that currentUrl() works)
-
+    # change what currentUrl means
+    _currentUrl = targetUrl
     $('#current-page').removeAttr('id')
     getIframe(targetUrl).attr('id', 'current-page')
 
@@ -248,7 +271,6 @@ update = (targetUrl) ->
         if url not in urlsToCache or (isFlashPage(url) and url != targetUrl)
             removeFromCache(url)
 
-    # try to make browser navigation work
     document.title = 'Better Homestuck #' + getPageNumber(targetUrl)
     setLinks()
 
@@ -265,8 +287,16 @@ scroll = (topMaybe) ->
     else
         $(window).scrollTop()
 
+# the scroll height that is the top of the content
+getTopLocation = (url) ->
+    if url.startsWith('http://www.mspaintadventures.com/?s=6&p=')
+        return 29  # for standard pages skip the top bar
+    return 0
+
+
 # deals with scrolling to a location on the current page or updating to a new page
 updateFromHash = (hash) ->
+
 
     # make the browser remember this hash to go back to
     setCookie('hash', hash)
@@ -277,10 +307,9 @@ updateFromHash = (hash) ->
     if hashParts.length > 1
         url = hashParts[1]
 
-    top = 0
-    if url.startsWith('http://www.mspaintadventures.com/?s=6&p=')
-        top = 29  # for standard pages skip the top bar
+    top = getTopLocation(url)
 
+    # if we have an instruction to go to a specific height, follow it
     if hashParts.length > 2
         top = Math.max(top, parseInt(hashParts[2]))
 
@@ -295,7 +324,6 @@ updateFromHash = (hash) ->
         # move the view to top. skip the little bar at the top for standard pages
         scroll top  # hard/fast scrolling
         update url
-    mainelement().focus()
 
 
 # given a homestuck url, returns the what the url-ending should be for the BetterHomestuck page
@@ -320,7 +348,7 @@ window.onpopstate = (event) ->
     updateFromHash document.location.hash
 
 
-scrollAmount = () -> getSetting('scroll-amount-percent') * window.innerHeight + getSetting('scroll-amount-pixel')
+scrollAmount = () -> (getSetting('scroll-amount-percent') / 100.0) * window.innerHeight + getSetting('scroll-amount-pixel')
 
 # sets the links on the buttons to point to the correct hashes
 setLinks = (url) ->
@@ -333,7 +361,7 @@ setLinks = (url) ->
         prevhash = makeHash(url, scroll() - scrollAmount())
 
     # if the bottom of the view is below the bottom of the content, go to the next page
-    contentBottom = parseInt(getIframe(currentUrl()).attr('contentHeight')) - 15
+    contentBottom = parseInt(getCurrentIframe().attr('contentHeight')) - 15
     if scroll() + $(window).height() > contentBottom or not getSetting('scroll-enabled')
         nexthash = makeHash nextUrl url
     else
@@ -345,12 +373,8 @@ setLinks = (url) ->
     $('#prevlink').attr('href', prevhash)
     $('#nextlink').attr('href', nexthash)
 
-
-mainelement = () ->
-    i = getIframe(currentUrl())
-    if i.attr('interactive')
-      return i
-    return document.getElementById('nextlink')
+onScroll = () ->
+    setLinks()
 
 
 main = () ->
@@ -360,9 +384,8 @@ main = () ->
         String.prototype.startsWith = (str) ->
             @indexOf(str) == 0
 
-    # event listeners
-    $(window).scroll(() -> setLinks())
 
+    # event listeners
     $('#settings-toggle').click -> $('#settings').toggle()
     $('#settings-reset-all').click resetAllSettings
     $(document).keydown (e) ->
@@ -390,6 +413,9 @@ main = () ->
             hash = makeHash defaultURL
     updateFromHash hash
 
+    # things that assume there is a current page
     setInterval(pollCurrentPage, 500)
+    $(window).scroll(onScroll)
+
 
 main()

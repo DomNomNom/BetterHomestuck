@@ -117,6 +117,18 @@
     return pad6(getPageNumber(url)) in window.flashPages;
   };
 
+  window.pageRequiresKeyboard = function(url) {
+    var pageNumber;
+    if (!containsPageNumber(url)) {
+      return false;
+    }
+    pageNumber = pad6(getPageNumber(url));
+    if (!(pageNumber in window.flashPages)) {
+      return false;
+    }
+    return window.flashPages[pageNumber] & 2;
+  };
+
   window.isHomestuckUrl = function(url) {
     return url.startsWith(baseURL) && containsPageNumber(url);
   };

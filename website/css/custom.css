@@ -83,8 +83,11 @@ label {
 #settings-toggle { height: 5vh;  }
 
 /* for minimal-ui setting */
-#sidebar.minimal-ui #prevlink { visibility: hidden; }
-#sidebar.minimal-ui #nextlink { visibility: hidden; }
+/* hack: we move these out of view rather than hide them
+         so they correctly recieve focus/enter events without being visible
+*/
+#sidebar.minimal-ui #prevlink { position: absolute; right: -100px; }
+#sidebar.minimal-ui #nextlink { position: absolute; right: -100px; }
 #sidebar.minimal-ui #settings-toggle {
     position: fixed;
     height: 40px;
