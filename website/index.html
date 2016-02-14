@@ -40,19 +40,21 @@
       </div>
     </div>
 
+
+
     <div id="sidebar">
-        <a href="#prev" class="btn btn-default btn-lg btn-block" id="prevlink">
+        <a id="prevlink" class="btn btn-default btn-lg btn-block">
           <span>
             <h1>&lt;==</h1>
           </span>
         </a>
 
-        <a href="#next" class="btn btn-default btn-lg btn-block" id="nextlink">
+        <a id="nextlink" class="btn btn-default btn-lg btn-block">
           <span>
             <h1>==&gt;</h1>
           </span>
         </a>
-        <a class="btn btn-default btn-lg btn-block" id="settings-toggle">
+        <a id="settings-toggle" class="btn btn-default btn-lg btn-block">
           <span>
             <h2>
               <span class="glyphicon glyphicon-cog"></span>
@@ -60,6 +62,8 @@
           </span>
         </a>
     </div>
+
+
 
     <div id="settings">
       <span>
@@ -73,19 +77,27 @@
           <input id="page-cache-size" type="number" class="form-control">
         </div>
 
-        <div class="form-group">
-          <label for="sidebar-size">Sidebar width: (%)</label>
-          <input id="sidebar-size" type="number" class="form-control">
-        </div>
-
-        <div>&nbsp;</div>
-
-        <div class="form-group">
+        <!-- sidebar size -->
+        <div class="form-group settings-group">
           <div class="checkbox">
-            <label for="scroll-enabled"><input id="scroll-enabled" type="checkbox" checked> Buttons scroll unless at the end of a page</label>
+            <label for="minimal-ui"><input id="minimal-ui" type="checkbox" checked> Minimal UI (keyboard controls only)</label>
           </div>
         </div>
-        <div id="scroll-settings">
+        <div id="inner-settings">
+          <div class="form-group">
+            <label for="sidebar-size">Sidebar width: (%)</label>
+            <input id="sidebar-size" type="number" class="form-control">
+          </div>
+        </div>
+
+
+        <!-- scroll -->
+        <div class="form-group settings-group">
+          <div class="checkbox">
+            <label for="scroll-enabled"><input id="scroll-enabled" type="checkbox" checked> Change page only when at the top/bottom</label>
+          </div>
+        </div>
+        <div id="inner-settings">
           <div class="form-group">
             <label for="scroll-duration">Scroll duration: (ms)</label>
             <input id="scroll-duration" type="number" class="form-control">

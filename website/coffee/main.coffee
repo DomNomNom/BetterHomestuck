@@ -3,11 +3,14 @@ defaultURL = 'http://www.mspaintadventures.com/?s=6&p=001901'
 
 defaultSettings = {
     'page-cache-size': 5
+
+    'minimal-ui': false
+    'sidebar-size': 20
+
     'scroll-enabled': true
     'scroll-duration': 400
     'scroll-amount-percent': 60
     'scroll-amount-pixel': -20
-    'sidebar-size': 25
 }
 
 settingClamps = {
@@ -48,6 +51,8 @@ setSetting = (setting, value) ->
             return defaultSetting
 
 onSettingsChanged = () ->
+
+    # apply clamps
     for setting, minMax of settingClamps
         min = minMax[0]
         max = minMax[1]
@@ -58,6 +63,8 @@ onSettingsChanged = () ->
     for setting, defaultSetting of defaultSettings
         setCookie(setting, getSetting(setting))
 
+
+    # apply setting: scroll-enabled
     # iff scroll is disabled, disable sub-settings
     scrollSubSettings = [
         'scroll-duration'
@@ -68,10 +75,27 @@ onSettingsChanged = () ->
     for setting in scrollSubSettings
         $('#' + setting).prop('disabled', not scrollEnabled);
 
-    sideWidth = getSetting('sidebar-size')
-    $('#sidebar').width(sideWidth + '%')
-    $('#cache-pages').width((100 - sideWidth) + '%')
-    $('#settings').css('right', sideWidth + '%')
+
+
+    # apply setting: minimal-ui
+    # apply setting: sidebar-size
+    $('#sidebar-size').prop('disabled', getSetting('minimal-ui'));
+    if getSetting('minimal-ui')
+        $('#sidebar').addClass('minimal-ui');
+
+        sideWidth = 40
+        $('#sidebar').width(        sideWidth + 'px')
+        $('#settings').css('right', sideWidth + 'px')
+        $('#cache-pages').width('100%')
+
+    else
+        $('#sidebar').removeClass('minimal-ui')
+
+        sideWidth = getSetting('sidebar-size')
+        $('#sidebar').width(        sideWidth + '%')
+        $('#settings').css('right', sideWidth + '%')
+        $('#cache-pages').width((100 - sideWidth) + '%')
+
 
 resetAllSettings = () ->
     if not window.confirm("Reset all settings?") then return

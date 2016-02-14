@@ -31,7 +31,7 @@ label {
     position: fixed;
     top: 0;
     right: 25%;
-    width: 25%;
+    width: 400px;
     height: 100%;
     margin: 0;
     padding: 10px;
@@ -46,7 +46,7 @@ label {
     filter: none;
 }
 
-#scroll-settings {
+#inner-settings {
     margin-left: 15px;
 }
 #settings-reset-all {
@@ -55,6 +55,10 @@ label {
     position: absolute;
     bottom: 20px;
     left: 25%;
+}
+
+.settings-group {
+    margin-top: 30px;
 }
 
 #sidebar {
@@ -78,3 +82,6 @@ label {
 #nextlink        { height: 75vh; }
 #settings-toggle { height: 5vh;  }
 
+/* for minimal-ui setting */
+#sidebar.minimal-ui #prevlink { visibility: hidden; }
+#sidebar.minimal-ui #nextlink { visibility: hidden; }

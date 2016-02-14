@@ -7,11 +7,12 @@
 
   defaultSettings = {
     'page-cache-size': 5,
+    'minimal-ui': false,
+    'sidebar-size': 20,
     'scroll-enabled': true,
     'scroll-duration': 400,
     'scroll-amount-percent': 60,
-    'scroll-amount-pixel': -20,
-    'sidebar-size': 25
+    'scroll-amount-pixel': -20
   };
 
   settingClamps = {
@@ -81,10 +82,20 @@
       setting = scrollSubSettings[j];
       $('#' + setting).prop('disabled', !scrollEnabled);
     }
-    sideWidth = getSetting('sidebar-size');
-    $('#sidebar').width(sideWidth + '%');
-    $('#cache-pages').width((100 - sideWidth) + '%');
-    return $('#settings').css('right', sideWidth + '%');
+    $('#sidebar-size').prop('disabled', getSetting('minimal-ui'));
+    if (getSetting('minimal-ui')) {
+      $('#sidebar').addClass('minimal-ui');
+      sideWidth = 40;
+      $('#sidebar').width(sideWidth + 'px');
+      $('#settings').css('right', sideWidth + 'px');
+      return $('#cache-pages').width('100%');
+    } else {
+      $('#sidebar').removeClass('minimal-ui');
+      sideWidth = getSetting('sidebar-size');
+      $('#sidebar').width(sideWidth + '%');
+      $('#settings').css('right', sideWidth + '%');
+      return $('#cache-pages').width((100 - sideWidth) + '%');
+    }
   };
 
   resetAllSettings = function() {
