@@ -85,3 +85,10 @@ label {
 /* for minimal-ui setting */
 #sidebar.minimal-ui #prevlink { visibility: hidden; }
 #sidebar.minimal-ui #nextlink { visibility: hidden; }
+#sidebar.minimal-ui #settings-toggle {
+    position: fixed;
+    height: 40px;
+    width:  40px;
+    right:  0px;
+    bottom: 0px;
+}
