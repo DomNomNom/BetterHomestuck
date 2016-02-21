@@ -354,20 +354,21 @@
   };
 
   setLinks = function(url) {
-    var contentBottom, nexthash, prevhash;
+    var bottomMostScroll, contentBottom, nexthash, prevhash;
     if (url == null) {
       url = currentUrl();
     }
+    contentBottom = parseInt(getCurrentIframe().attr('contentHeight')) - 15;
+    bottomMostScroll = contentBottom + 5 - $(window).height();
     if (scroll() <= 30 || !getSetting('scroll-enabled')) {
       prevhash = makeHash(prevUrl(url));
     } else {
-      prevhash = makeHash(url, scroll() - scrollAmount());
+      prevhash = makeHash(url, Math.min(bottomMostScroll, scroll() - scrollAmount()));
     }
-    contentBottom = parseInt(getCurrentIframe().attr('contentHeight')) - 15;
     if (scroll() + $(window).height() > contentBottom || !getSetting('scroll-enabled')) {
       nexthash = makeHash(nextUrl(url));
     } else {
-      nexthash = makeHash(url, Math.min(contentBottom + 5 - $(window).height(), scroll() + scrollAmount()));
+      nexthash = makeHash(url, Math.min(bottomMostScroll, scroll() + scrollAmount()));
     }
     $('#prevlink').attr('href', prevhash);
     return $('#nextlink').attr('href', nexthash);

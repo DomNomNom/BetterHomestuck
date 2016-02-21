@@ -355,20 +355,19 @@ setLinks = (url) ->
     if not url?
         url = currentUrl()
 
+    contentBottom = parseInt(getCurrentIframe().attr('contentHeight')) - 15
+    bottomMostScroll = contentBottom + 5 - $(window).height()  # if we go down further, there is no content to be seen
+
     if scroll() <= 30 or not getSetting('scroll-enabled')
         prevhash = makeHash prevUrl url
     else
-        prevhash = makeHash(url, scroll() - scrollAmount())
+        prevhash = makeHash(url, Math.min(bottomMostScroll, scroll() - scrollAmount()))
 
     # if the bottom of the view is below the bottom of the content, go to the next page
-    contentBottom = parseInt(getCurrentIframe().attr('contentHeight')) - 15
     if scroll() + $(window).height() > contentBottom or not getSetting('scroll-enabled')
         nexthash = makeHash nextUrl url
     else
-        nexthash = makeHash(url, Math.min(
-            contentBottom + 5 - $(window).height(),
-            scroll() + scrollAmount()
-        ))
+        nexthash = makeHash(url, Math.min(bottomMostScroll, scroll() + scrollAmount()))
 
     $('#prevlink').attr('href', prevhash)
     $('#nextlink').attr('href', nexthash)
