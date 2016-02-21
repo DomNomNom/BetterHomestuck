@@ -166,10 +166,14 @@ window.onmessage = (event) ->
 
     # is this information regarding the current iframe?
     if getCurrentIframe().attr('src') == data.iframeSrc
+        # special logic for when the user navigated within the iframe
         if currentUrl() != data.page
-            _currentUrl = data.page
+            _currentUrl = data.page  # pretend that we make an update without changing any iframes
             scroll getTopLocation(currentUrl())
-            history.pushState({}, 'Better Homestuck', makeHash data.page) # set the browserURL without leaving this page
+            history.pushState({}, 'Better Homestuck', makeHash currentUrl()) # set the browserURL without leaving this page
+            if isHomestuckUrl(currentUrl())
+                setCookie('hash', makeHash currentUrl())
+
 
             # console.log "The iframe url changed: #{ currentUrl() } --> #{ data.page }"
         setLinks(data.page)
@@ -201,7 +205,6 @@ activateIframe = (url) ->
     iframe = getIframe(url)
     iframe.load ->
         sendMessageToIframe(iframe, url)
-        # setTimeout(sendMessageToIframe, 0, iframe, url)  # js WAT
 
 # sometimes we get redirected and the iframe src goes out of sync with what we expect the page to be
 # this is a hack to get around that

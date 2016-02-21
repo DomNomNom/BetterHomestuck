@@ -194,7 +194,10 @@
       if (currentUrl() !== data.page) {
         _currentUrl = data.page;
         scroll(getTopLocation(currentUrl()));
-        history.pushState({}, 'Better Homestuck', makeHash(data.page));
+        history.pushState({}, 'Better Homestuck', makeHash(currentUrl()));
+        if (isHomestuckUrl(currentUrl())) {
+          setCookie('hash', makeHash(currentUrl()));
+        }
       }
       setLinks(data.page);
     }
