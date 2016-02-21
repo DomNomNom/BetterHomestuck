@@ -6,6 +6,20 @@ function centerView() {
 $(centerView())
 $(window).resize(centerView)
 
+function docScratchReadability() {
+  // kudos to https://github.com/murgatroid99/doc-scratch-readability-extension/blob/master/js/content_script.js
+  // although the code as been make much nicer with jquery
+  function setupHoverBehaviour() {
+    this.style.background = "transparent";
+    // these colours are more more true to character but don't look as good in context: #2cff4b #0e4603
+    this.onmouseover = function(){  this.style.background="green";  };
+    this.onmouseout  = function(){  this.style.background="transparent";  };
+  }
+  $('.spoiler span[style*="color: #FFFFFF"]').each(setupHoverBehaviour)
+  $('.spoiler span[style*="color: #ffffff"]').each(setupHoverBehaviour)
+}
+docScratchReadability();
+
 
 if (document.location.toString().indexOf("p=007326") < 0) {  // special case, because hussie
   $('.spoiler').attr('style', '')  // show the chat logs
