@@ -1,10 +1,30 @@
 
+
+baseURL = 'http://www.mspaintadventures.com/';
+
 // point the browser at the BetterHomestuck page
-function openBetterHomestuckPage() {
-    chrome.tabs.create({
-        url: "http://DomNomNom.com/BetterHomestuck/",
-        active: true,
-    });
+// use the current page if we are on a Homestuck page
+function openBetterHomestuckPage(tab) {
+
+    if (tab.url.startsWith(baseURL)) {
+        // we are in a homestuck page
+        // take us to the better version of it
+        // TODO: sanitize tab.url or use something else to change the page but it looks like an unlikely/ineffective attack vector
+        chrome.tabs.executeScript(
+            tab.id,
+            {
+                code: 'window.location.href = "http://better-homestuck.appspot.com/#' + tab.url + '";'
+            }
+        );
+    }
+    else {
+        // open a new tab with the default URL
+        chrome.tabs.create({
+            // url: "http://DomNomNom.com/BetterHomestuck/",
+            url: 'http://better-homestuck.appspot.com/',
+            active: true,
+        });
+    }
 }
 
 // execute the above when the extension's icon is clicked
