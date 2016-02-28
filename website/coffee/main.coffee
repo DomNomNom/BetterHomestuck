@@ -294,12 +294,16 @@ update = (targetUrl) ->
 
 
 # a convenience wrapper for $(window.top).scrollTop()
+# takes into account where we are currently animating to
 scroll = (topMaybe) ->
     if topMaybe?
-        $("html, body").stop()
+        $('html, body').stop()
         $(window).scrollTop(topMaybe)
     else
-        $(window).scrollTop()
+        scrollTarget = $('#scroll-target').val()
+        if scrollTarget
+            return parseInt scrollTarget
+        return $(window).scrollTop()
 
 # the scroll height that is the top of the content
 getTopLocation = (url) ->
@@ -327,16 +331,24 @@ updateFromHash = (hash) ->
     if hashParts.length > 2
         top = Math.max(top, parseInt(hashParts[2]))
 
-
     if url == currentUrl() || (currentUrl()? and getPageNumber(url) == getPageNumber(currentUrl()))
+        $('#scroll-target').val(top)
         # smooth scrolling to where we want to be
-        $("html, body").animate(
+        $('html, body').stop().animate(
             { scrollTop: top },
-            duration=getSetting 'scroll-duration'
+            {
+                duration: getSetting 'scroll-duration'
+                complete: () ->
+                    $('#scroll-target').val('')
+                    console.log "clear!"
+            }
         )
     else
         # move the view to top. skip the little bar at the top for standard pages
-        scroll top  # hard/fast scrolling
+        # hard/fast scrolling
+        $('html, body').stop()
+        $('#scroll-target').val('')
+        scroll top
         update url
 
 

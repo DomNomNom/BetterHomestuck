@@ -14,9 +14,13 @@ body {
 .stuckpage#current-page {
     display: block;
 }
-
 iframe {
     border: 0;
+}
+
+#hidden-state {
+    display: none;
+    position: fixed;
 }
 
 #hold-your-horses {

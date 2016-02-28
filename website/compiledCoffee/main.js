@@ -307,10 +307,15 @@
   };
 
   scroll = function(topMaybe) {
+    var scrollTarget;
     if (topMaybe != null) {
-      $("html, body").stop();
+      $('html, body').stop();
       return $(window).scrollTop(topMaybe);
     } else {
+      scrollTarget = $('#scroll-target').val();
+      if (scrollTarget) {
+        return parseInt(scrollTarget);
+      }
       return $(window).scrollTop();
     }
   };
@@ -323,7 +328,7 @@
   };
 
   updateFromHash = function(hash) {
-    var duration, hashParts, top, url;
+    var hashParts, top, url;
     setCookie('hash', hash);
     hashParts = hash.split('#');
     url = defaultURL;
@@ -335,10 +340,19 @@
       top = Math.max(top, parseInt(hashParts[2]));
     }
     if (url === currentUrl() || ((currentUrl() != null) && getPageNumber(url) === getPageNumber(currentUrl()))) {
-      return $("html, body").animate({
+      $('#scroll-target').val(top);
+      return $('html, body').stop().animate({
         scrollTop: top
-      }, duration = getSetting('scroll-duration'));
+      }, {
+        duration: getSetting('scroll-duration'),
+        complete: function() {
+          $('#scroll-target').val('');
+          return console.log("clear!");
+        }
+      });
     } else {
+      $('html, body').stop();
+      $('#scroll-target').val('');
       scroll(top);
       return update(url);
     }
