@@ -9,7 +9,12 @@ body {
 .stuckpage {
     width: 100%;
     height: 8000px;
+    display: none;
 }
+.stuckpage#current-page {
+    display: block;
+}
+
 iframe {
     border: 0;
 }

@@ -2,7 +2,8 @@
 defaultURL = 'http://www.mspaintadventures.com/?s=6&p=001901'
 
 defaultSettings = {
-    'page-cache-size': 5
+    'page-cache-size':      5
+    'page-cache-size-back': 2
 
     'minimal-ui': false
     'sidebar-size': 20
@@ -14,7 +15,8 @@ defaultSettings = {
 }
 
 settingClamps = {
-    'page-cache-size': [0, 20]
+    'page-cache-size':      [0, 20]
+    'page-cache-size-back': [0, 20]
     'scroll-duration': [0, 10000]
     'sidebar-size': [1, 60]
 }
@@ -123,7 +125,7 @@ getCookie = (cookieName, defaultSetting='') ->
                 when "boolean" then return value == "true"
                 else console.warn "defaultSetting for #{ cookieName } had a bad type: #{ typeof defaultSetting }"
 
-    console.log "did not find cookie for name: #{ cookieName }"
+    console.info "did not find cookie for name: #{ cookieName }. Using default: #{ defaultSetting }"
     return defaultSetting
 
 
@@ -161,8 +163,11 @@ window.onmessage = (event) ->
 
     # find out about the size of the iframe content. (requires a message from the iframe content)
     if data.contentHeight
-        # console.log "contentHeight (#{ data.iframeSrc },  #{ data.page }) -->  #{ data.contentHeight }"
+        # console.debug "contentHeight (#{ data.iframeSrc },  #{ data.page }) -->  #{ data.contentHeight }"
         getIframe(data.iframeSrc).attr('contentHeight', data.contentHeight)
+
+    if data.windowHeight
+        getIframe(data.iframeSrc).css("height", "#{ data.windowHeight }")
 
     # is this information regarding the current iframe?
     if getCurrentIframe().attr('src') == data.iframeSrc
@@ -175,7 +180,7 @@ window.onmessage = (event) ->
                 setCookie('hash', makeHash currentUrl())
 
 
-            # console.log "The iframe url changed: #{ currentUrl() } --> #{ data.page }"
+            # console.debug "The iframe url changed: #{ currentUrl() } --> #{ data.page }"
         setLinks(data.page)
 
 
@@ -194,7 +199,7 @@ focusElement = () ->
 # communicate with the iframe (note: window.onmessage handles the response)
 sendMessageToIframe = (iframe, url) ->
     # if getIframeUnsafe(url).length == 0
-    #     console.log 'iframe src changed.'
+    #     console.debug 'iframe src changed.'
     message = {
         'messagetype': 'your iframeSrc is'
         'iframeSrc': url
@@ -227,11 +232,17 @@ removeFromCache = (url) ->
 
 # deals with going to a new page in the comic
 update = (targetUrl) ->
-    console.log ('updating: ' + targetUrl)
+    # console.debug ('updating: ' + targetUrl)
     console.assert isHomestuckUrl targetUrl
-
     # figure out which urls we want in the cache
     urlsToCache = [targetUrl]
+    cacheSize_back = getSetting 'page-cache-size-back'
+    url = targetUrl
+    for i in [0..cacheSize_back]
+        url = prevUrl url
+        if url == targetUrl then break
+        urlsToCache.unshift url
+
     url = targetUrl
     cacheSize_forward = getSetting 'page-cache-size'
     for i in [0..cacheSize_forward]
@@ -241,7 +252,7 @@ update = (targetUrl) ->
     # if the current page has been navigated in-iframe, remove it
     # note: this deals with inner-forward, outer-backward navigation
     if haveCurrentIframe() and getCurrentIframe().attr('src') != currentUrl()
-        console.log "removing iframe due to content change: #{ getCurrentIframe().attr('src') }  #{ currentUrl() }"
+        console.info "removing iframe due to content change: #{ getCurrentIframe().attr('src') }  #{ currentUrl() }"
         removeFromCache(getCurrentIframe().attr('src'))
 
     # prepend any missing pages that are logically before any element in the cache
@@ -251,7 +262,7 @@ update = (targetUrl) ->
             prependToCache url
 
     # special case for flash as they don't get preloaded
-    if isFlashPage url
+    if isFlashPage targetUrl
         prependToCache targetUrl
 
     # append any urls that are still missing to the cache
@@ -347,7 +358,7 @@ makeHash = (url, top) ->
 
 # any time the url is changed by the browser. eg. clicking one of the buttons
 window.onpopstate = (event) ->
-    console.log "popstate: " + document.location.hash
+    # console.debug "popstate: " + document.location.hash
     updateFromHash document.location.hash
 
 

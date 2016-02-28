@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="Better Homestuck">
+    <meta name="author" content="DomNomNom">
     <!-- <link rel="icon" href="../../favicon.ico"> -->
 
     <title>Yay hometuck!</title>
@@ -29,15 +29,10 @@
 
   <body>
 
+
+    <!-- cached ifames go in here -->
+    <!-- eg. <iframe id="current-page" class="stuckpage" src="http://www.mspaintadventures.com/?s=6&p=001901"></iframe> -->
     <div id="cache-pages">
-      <!-- cached ifames go here -->
-      <!-- <iframe id="current-page" class="stuckpage" src="http://www.mspaintadventures.com/?s=6&p=001901"></iframe> -->
-      <div class="jumbotron" id="hold-your-horses">
-        <h1>Hold your horses!</h1>
-        <p>You aren't meant to scroll down here: The content below is used to cache pages so they load quicker.</p>
-        <p>To advance to the next panel click on the "next" button at the top or click the left/right side of this page. </p>
-        <p><a class="btn btn-primary btn-lg nextlink" onclick="scroll(0,0)">Back to top</a></p>
-      </div>
     </div>
 
 
@@ -73,8 +68,12 @@
       <form role="form">
 
         <div class="form-group">
-          <label for="page-cache-size">Number of pages preloaded:</label>
+          <label for="page-cache-size">Number of pages preloaded: (==>)</label>
           <input id="page-cache-size" type="number" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="page-cache-size-back">Number of pages preloaded: (<==)</label>
+          <input id="page-cache-size-back" type="number" class="form-control">
         </div>
 
         <!-- sidebar size -->
@@ -122,6 +121,7 @@
       </a>
     </div>
 
+
     <!-- JavaScript
         ================================================== -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -134,6 +134,7 @@
 
     <script src="compiledCoffee/urls.js"></script>
     <script src="compiledCoffee/main.js"></script>
+
 
   </body>
 </html>

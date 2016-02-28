@@ -65,6 +65,10 @@ window.onmessage = function (event) {
       else if (url.indexOf('ACT6ACT5ACT1x2COMBO.php') > 0) {
         contentHeight += 50
       }
+      if (document.location.pathname === "/" && document.location.search === "") {
+        contentHeight = 900
+        console.info("current page seems to be the homepage: " + document.location)
+      }
 
       var interaction = mainTable.find('embed, canvas')
       if (interaction) interaction.focus()
@@ -73,6 +77,7 @@ window.onmessage = function (event) {
         // 'messagetype': 'pageload',
         'page': document.location+'',
         'contentHeight': contentHeight,
+        'windowHeight':  $('body > center').height(),
         'iframeSrc': event.data.iframeSrc,
         'interactive': interaction.length !== 0 // Needs a better test since the 'choose your path' flashes aren't really that interactive
       }

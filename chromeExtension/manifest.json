@@ -4,7 +4,7 @@
   "name": "Better Homestuck",
   "short_name": "BetterHomestuck",
   "description": "Improves the Homestuck reading experience",
-  "version": "1.1.3",
+  "version": "1.2.2",
 
   "browser_action": {
     "default_icon": "icon48.png"

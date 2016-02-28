@@ -7,6 +7,7 @@
 
   defaultSettings = {
     'page-cache-size': 5,
+    'page-cache-size-back': 2,
     'minimal-ui': false,
     'sidebar-size': 20,
     'scroll-enabled': true,
@@ -17,6 +18,7 @@
 
   settingClamps = {
     'page-cache-size': [0, 20],
+    'page-cache-size-back': [0, 20],
     'scroll-duration': [0, 10000],
     'sidebar-size': [1, 60]
   };
@@ -141,7 +143,7 @@
         }
       }
     }
-    console.log("did not find cookie for name: " + cookieName);
+    console.info("did not find cookie for name: " + cookieName + ". Using default: " + defaultSetting);
     return defaultSetting;
   };
 
@@ -189,6 +191,9 @@
     data = event.data;
     if (data.contentHeight) {
       getIframe(data.iframeSrc).attr('contentHeight', data.contentHeight);
+    }
+    if (data.windowHeight) {
+      getIframe(data.iframeSrc).css("height", "" + data.windowHeight);
     }
     if (getCurrentIframe().attr('src') === data.iframeSrc) {
       if (currentUrl() !== data.page) {
@@ -249,31 +254,39 @@
   };
 
   update = function(targetUrl) {
-    var cacheSize_forward, i, j, k, l, len, ref, ref1, url, urlsToCache;
-    console.log('updating: ' + targetUrl);
+    var cacheSize_back, cacheSize_forward, i, j, k, l, len, m, ref, ref1, ref2, url, urlsToCache;
     console.assert(isHomestuckUrl(targetUrl));
     urlsToCache = [targetUrl];
+    cacheSize_back = getSetting('page-cache-size-back');
+    url = targetUrl;
+    for (i = j = 0, ref = cacheSize_back; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
+      url = prevUrl(url);
+      if (url === targetUrl) {
+        break;
+      }
+      urlsToCache.unshift(url);
+    }
     url = targetUrl;
     cacheSize_forward = getSetting('page-cache-size');
-    for (i = j = 0, ref = cacheSize_forward; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
+    for (i = k = 0, ref1 = cacheSize_forward; 0 <= ref1 ? k <= ref1 : k >= ref1; i = 0 <= ref1 ? ++k : --k) {
       url = nextUrl(url);
       urlsToCache.push(url);
     }
     if (haveCurrentIframe() && getCurrentIframe().attr('src') !== currentUrl()) {
-      console.log("removing iframe due to content change: " + (getCurrentIframe().attr('src')) + "  " + (currentUrl()));
+      console.info("removing iframe due to content change: " + (getCurrentIframe().attr('src')) + "  " + (currentUrl()));
       removeFromCache(getCurrentIframe().attr('src'));
     }
-    for (i = k = ref1 = urlsToCache.length - 1; k >= 0; i = k += -1) {
+    for (i = l = ref2 = urlsToCache.length - 1; l >= 0; i = l += -1) {
       url = urlsToCache[i];
       if ((!inCache(url)) && inCache(nextUrl(url)) && !isFlashPage(url)) {
         prependToCache(url);
       }
     }
-    if (isFlashPage(url)) {
+    if (isFlashPage(targetUrl)) {
       prependToCache(targetUrl);
     }
-    for (l = 0, len = urlsToCache.length; l < len; l++) {
-      url = urlsToCache[l];
+    for (m = 0, len = urlsToCache.length; m < len; m++) {
+      url = urlsToCache[m];
       if ((!inCache(url)) && !isFlashPage(url)) {
         appendToCache(url);
       }
@@ -348,7 +361,6 @@
   };
 
   window.onpopstate = function(event) {
-    console.log("popstate: " + document.location.hash);
     return updateFromHash(document.location.hash);
   };
 

@@ -1,7 +1,7 @@
 
 # this file contains logic to deal with url strings of he comic
 
-baseURL = 'http://www.mspaintadventures.com/'
+baseURL = 'http://www.mspaintadventures.com'
 
 # a list of special connections in the comic
 specialPageChains = [
@@ -30,15 +30,17 @@ specialPrevLinks = {}
 
 
 # special pages that do not have "s=6&p=......" in them
-specialPages = {
-    1901:  baseURL + '?s=6',
-    7680:  baseURL + '007680/007680.html'
-    6715:  baseURL + 'DOTA/'
+specialPages_reverse = {
+    "#{ baseURL }":       1901
+    "#{ baseURL }/":      1901
+    "#{ baseURL }?s=6":   1901
+    "#{ baseURL }/?s=6":  1901
+    "#{ baseURL }/DOTA/": 6715
+    "#{ baseURL }/007680/007680.html": 7680
 }
-specialPages_reverse = {}
-for pageNum, url of specialPages
-    specialPages_reverse[url] = parseInt(pageNum)
-
+specialPages = {}
+for url, pageNum of specialPages
+    specialPages[pageNum] = url
 
 
 # padds a integer with zeroes so it is of string length 6
@@ -70,7 +72,7 @@ makeUrl = (pageNum) ->
     else if 7614 <= pageNum <= 7677  then php = 'trickster.php'
     else if isA6A5A1X2COMBO(pageNum) then php = 'ACT6ACT5ACT1x2COMBO.php'
 
-    return baseURL + php + '?s=6&p=' + pad6(pageNum)
+    return baseURL + '/' + php + '?s=6&p=' + pad6(pageNum)
 
 containsPageNumber = (url) ->
     if url of specialPages_reverse then return true
@@ -121,7 +123,11 @@ window.pageRequiresKeyboard = (url) ->
 
 
 # validates whether a URL is part of the comic
-window.isHomestuckUrl = (url) -> url.startsWith(baseURL) and containsPageNumber(url)
+window.isHomestuckUrl = (url) ->
+    if url == baseURL                     then return true
+    if not url.startsWith(baseURL + '/')  then return false
+    if not containsPageNumber(url)        then return false
+    return true
 
 
 
