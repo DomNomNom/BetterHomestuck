@@ -9,7 +9,7 @@
     'page-cache-size': 5,
     'page-cache-size-back': 2,
     'minimal-ui': false,
-    'sidebar-size': 20,
+    'sidebar-size': 15,
     'scroll-enabled': true,
     'scroll-duration': 400,
     'scroll-amount-percent': 60,

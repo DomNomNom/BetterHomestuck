@@ -5,6 +5,8 @@ baseURL = 'http://www.mspaintadventures.com'
 
 # a list of special connections in the comic
 specialPageChains = [
+    [136, 171]
+
     [4298, 4300]
     [4937, 4939]
     [4987, 4989]
@@ -19,25 +21,41 @@ oneWayLinks = {
     6721: 6720
     6722: 6720
     6723: 6720
-
     6726: 6725
 }
 
-# these will get initialized at the bottom of this file
+
+
+# these two will get initialized at the bottom of this file
+# so we can use functions
 specialNextLinks = {}
 specialPrevLinks = {}
 
 
-
-# special pages that do not have "s=6&p=......" in them
+# when the comics start and end
+comicNumRanges = {
+ #s=.   . <= p <= .
+    1: [   2,    135]
+    2: [ 136,    216]
+    3: [ 217,    217]
+    4: [ 219,   1892]
+    5: [1893,   1900]
+    6: [1901,  10000]
+}
+# special pages that do not have "s=.&p=......" in them
 specialPages_reverse = {
+    # "#{ baseURL }?s=3":
     "#{ baseURL }":       1901
     "#{ baseURL }/":      1901
     "#{ baseURL }?s=6":   1901
-    "#{ baseURL }/?s=6":  1901
+    # "#{ baseURL }/?s=6":  1901
     "#{ baseURL }/DOTA/": 6715
     "#{ baseURL }/007680/007680.html": 7680
 }
+# all starting pages can be accessed in a special way
+for comicNum, beginEnd of comicNumRanges
+    specialPages_reverse["#{ baseURL }/?s=#{ comicNum }"] = beginEnd[0]
+
 specialPages = {}
 for url, pageNum of specialPages
     specialPages[pageNum] = url
@@ -49,6 +67,15 @@ pad6 = (pageNum) ->
   pad = '000000'
   str = '' + pageNum
   return pad.substring(0, pad.length - str.length) + str
+
+# finds the comic (?s=comicNum) that contains the given page number
+findComicNum = (pageNum) ->
+    for comicNum, beginEnd of comicNumRanges
+        if beginEnd[0] <= pageNum and pageNum <= beginEnd[1]
+            return comicNum
+
+    console.error("could not find a comic number for page number: #{ pageNum }")
+    return 6
 
 # hussie <3<
 isA6A5A1X2COMBO = (pageNum) -> return 7688 <= pageNum <= 7824
@@ -72,7 +99,10 @@ makeUrl = (pageNum) ->
     else if 7614 <= pageNum <= 7677  then php = 'trickster.php'
     else if isA6A5A1X2COMBO(pageNum) then php = 'ACT6ACT5ACT1x2COMBO.php'
 
-    return baseURL + '/' + php + '?s=6&p=' + pad6(pageNum)
+    comicNum = findComicNum(pageNum)
+
+    # eg. http://www.mspaintadventures.com/index.php?s=6&p=001913
+    return "#{ baseURL }/#{ php }?s=#{ comicNum }&p=#{ pad6(pageNum) }"
 
 containsPageNumber = (url) ->
     if url of specialPages_reverse then return true
@@ -84,15 +114,29 @@ window.getPageNumber = (url) ->
         return specialPages_reverse[url]
     return parseInt(/p=(\d+)/.exec(url)[1])
 
+
+# checks whether the page number is the first page of a comic
+isBegin = (pageNum) ->
+    for comicNum, beginEnd of comicNumRanges
+        if beginEnd[0] == pageNum
+            return true
+    return false
+isEnd = (pageNum) ->  # same as above, just for the last page
+    for comicNum, beginEnd of comicNumRanges
+        if beginEnd[1] == pageNum
+            return true
+    return false
+
 # gets the URL for the next page given the current one
 window.nextUrl = (url) ->
     if url of specialNextLinks
         return specialNextLinks[url]
     pageNum = getPageNumber url
-    if isA6A5A1X2COMBO pageNum
-        pageNum += 2
-    else
-        pageNum += 1
+    if not isEnd(pageNum)
+        if isA6A5A1X2COMBO pageNum
+            pageNum += 2
+        else
+            pageNum += 1
     return makeUrl pageNum
 
 # gets the URL for the next page given the current one
@@ -100,10 +144,11 @@ window.prevUrl = (url) ->
     if url of specialPrevLinks
         return specialPrevLinks[url]
     pageNum = getPageNumber url
-    if isA6A5A1X2COMBO pageNum
-        pageNum -= 2
-    else
-        pageNum -= 1
+    if not isBegin(pageNum)
+        if isA6A5A1X2COMBO pageNum
+            pageNum -= 2
+        else
+            pageNum -= 1
     return makeUrl pageNum
 
 # returns true if the page should not be preloaded
