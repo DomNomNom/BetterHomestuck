@@ -8,6 +8,8 @@ defaultSettings = {
     'minimal-ui': false
     'sidebar-size': 15
 
+    'show-reddit-link': true
+
     'scroll-enabled': true
     'scroll-duration': 400
     'scroll-amount-percent': 60
@@ -21,7 +23,7 @@ settingClamps = {
     'sidebar-size': [1, 60]
 }
 
-
+minimizedSize = 40
 
 getSetting = (setting) ->
     console.assert not setting.startsWith('#')
@@ -87,9 +89,10 @@ onSettingsChanged = () ->
     if getSetting('minimal-ui')
         $('#sidebar').addClass('minimal-ui');
 
-        sideWidth = 40
-        $('#sidebar').width(        sideWidth + 'px')
-        $('#settings').css('right', sideWidth + 'px')
+
+        $('#sidebar').width(           minimizedSize + 'px')
+        $('#settings'   ).css('right', minimizedSize + 'px')
+        $('#reddit-link').css('right', minimizedSize + 'px')
         $('#cache-pages').width('100%')
 
     else
@@ -97,7 +100,8 @@ onSettingsChanged = () ->
 
         sideWidth = getSetting('sidebar-size')
         $('#sidebar').width(        sideWidth + '%')
-        $('#settings').css('right', sideWidth + '%')
+        $('#settings'   ).css('right', sideWidth + '%')
+        $('#reddit-link').css('right', sideWidth + '%')
         $('#cache-pages').width((100 - sideWidth) + '%')
 
 
@@ -398,6 +402,13 @@ setLinks = (url) ->
     $('#prevlink').attr('href', prevhash)
     $('#nextlink').attr('href', nexthash)
 
+    # reddit-link
+    if getSetting('show-reddit-link') and hasRedditDiscussion url
+        $('#reddit-link').attr('href', getRedditDiscussionUrl url).show()
+    else
+        $('#reddit-link').hide()
+
+
 onScroll = () ->
     setLinks()
 
@@ -432,6 +443,8 @@ main = () ->
         $('#' + setting).change(onSettingsChanged)
 
     hash = document.location.hash
+    console.log isHomestuckUrl(hash.split('#')[1]))
+    console.log hash.startsWith('#')
     if not (hash.startsWith('#') and isHomestuckUrl(hash.split('#')[1])) # if url is not a valid hash
         hash = getCookie('hash')
         if hash is ''

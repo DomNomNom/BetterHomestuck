@@ -39,7 +39,7 @@
     </div>
 
 
-
+    <!-- sidebar -->
     <div id="sidebar">
         <a id="prevlink" class="btn btn-default btn-lg btn-block">
           <span>
@@ -61,8 +61,13 @@
         </a>
     </div>
 
+    <!-- reddit link -->
+    <a id="reddit-link" class="hidden btn btn-default btn-lg btn-block" target="_blank" href="https://google.com">
+      <img src="/images/redditLink.png">
+    </a>
 
 
+    <!-- settings -->
     <div id="settings">
       <span>
         <h1>Better Homestuck Settings</h1>
@@ -116,6 +121,12 @@
           </div>
         </div>
 
+        <div class="form-group settings-group">
+          <div class="checkbox">
+            <label for="show-reddit-link"><input id="show-reddit-link" type="checkbox" checked> Show link to reddit discussion. (available Act 6 onwards)</label>
+          </div>
+        </div>
+
       </form>
       <a id="settings-reset-all" class="btn btn-default btn-lg btn-block">
         <span>
@@ -125,19 +136,17 @@
     </div>
 
 
-    <!-- JavaScript
-        ================================================== -->
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <!-- Third party libraries -->
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> -->
     <script src="js/jquery.js"></script>
-
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.js"></script>
+
+    <!-- Data files -->
     <script src="js/flashPages.js"></script>
+    <script src="js/redditPages.js"></script>
 
     <script src="compiledCoffee/urls.js"></script>
     <script src="compiledCoffee/main.js"></script>
-
 
   </body>
 </html>

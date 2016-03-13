@@ -68,6 +68,7 @@ label {
 
 .settings-group {
     margin-top: 30px;
+    margin-bottom: 1px;
 }
 
 #sidebar {
@@ -103,4 +104,16 @@ label {
     width:  40px;
     right:  0px;
     bottom: 0px;
+}
+
+#reddit-link {
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    height: 40px;
+    width:  40px;
+}
+
+.hidden {
+    display: none;
 }

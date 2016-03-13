@@ -160,10 +160,10 @@ window.isFlashPage = (url) ->
 window.pageRequiresKeyboard = (url) ->
     if not containsPageNumber url
         return false
-    pageNumber = pad6(getPageNumber url)
-    if pageNumber not of window.flashPages
+    pageNum = pad6(getPageNumber url)
+    if pageNum not of window.flashPages
         return false
-    return window.flashPages[pageNumber] & 2  # bitmasking
+    return window.flashPages[pageNum] & 2  # bitmasking
 
 
 
@@ -175,6 +175,30 @@ window.isHomestuckUrl = (url) ->
     return true
 
 
+
+# reddit discussion urls. uses redditPages.js
+
+window.hasRedditDiscussion = (url) ->
+    pageNum = getPageNumber url
+    return redditDiscussion_min <= pageNum <= redditDiscussion_max
+
+# binary searches the redditDiscussion array (from redditPages.js)
+# returnss the discussion with the highest pageNum where pageNum <= targetPageNum
+bisectBelow = (bot, top, targetPageNum) ->
+    if bot == top
+        console.assert(bot <= targetPageNum)
+        return redditDiscussions[bot][1]
+    mid = (bot + top) // 2
+    midPage = redditDiscussions[mid][0]
+    if midPage <= targetPageNum
+        return bisectBelow(mid+1, top, targetPageNum)
+    else
+        return bisectBelow(bot,   mid, targetPageNum)
+
+window.getRedditDiscussionUrl = (url) ->
+    console.assert hasRedditDiscussion url
+    redditExtension = bisectBelow(0, redditDiscussions.length, getPageNumber url)
+    return 'https://redd.it/' + redditExtension
 
 
 
