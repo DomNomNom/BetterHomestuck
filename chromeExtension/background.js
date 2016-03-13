@@ -1,12 +1,12 @@
 
 
-baseURL = 'http://www.mspaintadventures.com/';
+baseURL = 'http://mspaintadventures.com/';
+baseURL2 = 'http://www.mspaintadventures.com/';
 
 // point the browser at the BetterHomestuck page
 // use the current page if we are on a Homestuck page
 function openBetterHomestuckPage(tab) {
-
-    if (tab.url.startsWith(baseURL)) {
+    if (tab.url.startsWith(baseURL) || tab.url.startsWith(baseURL2)) {
         // we are in a homestuck page
         // take us to the better version of it
         // TODO: sanitize tab.url or use something else to change the page but it looks like an unlikely/ineffective attack vector
