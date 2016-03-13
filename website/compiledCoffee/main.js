@@ -350,8 +350,7 @@
       }, {
         duration: getSetting('scroll-duration'),
         complete: function() {
-          $('#scroll-target').val('');
-          return console.log("clear!");
+          return $('#scroll-target').val('');
         }
       });
     } else {
@@ -448,7 +447,7 @@
       $('#' + setting).change(onSettingsChanged);
     }
     hash = document.location.hash;
-    if (!hash.startsWith('#') && isHomestuckUrl(hash.split('#')[1])) {
+    if (!(hash.startsWith('#') && isHomestuckUrl(hash.split('#')[1]))) {
       hash = getCookie('hash');
       if (hash === '') {
         hash = makeHash(defaultURL);

@@ -344,7 +344,6 @@ updateFromHash = (hash) ->
                 duration: getSetting 'scroll-duration'
                 complete: () ->
                     $('#scroll-target').val('')
-                    console.log "clear!"
             }
         )
     else
@@ -443,8 +442,6 @@ main = () ->
         $('#' + setting).change(onSettingsChanged)
 
     hash = document.location.hash
-    console.log isHomestuckUrl(hash.split('#')[1]))
-    console.log hash.startsWith('#')
     if not (hash.startsWith('#') and isHomestuckUrl(hash.split('#')[1])) # if url is not a valid hash
         hash = getCookie('hash')
         if hash is ''
